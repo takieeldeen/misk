@@ -1,0 +1,97 @@
+{
+  "info": {
+    "name": "Perfume E-commerce API (Full Design)",
+    "description": "Complete API based on system design - production ready",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000/api/v1" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+
+    {
+      "name": "1. Auth",
+      "item": [
+        { "name": "Login", "request": { "method": "POST", "url": "{{base_url}}/auth/login" }},
+        { "name": "Register", "request": { "method": "POST", "url": "{{base_url}}/auth/register" }},
+        { "name": "Forgot Password", "request": { "method": "POST", "url": "{{base_url}}/auth/forgot-password" }},
+        { "name": "Change Password", "request": { "method": "POST", "url": "{{base_url}}/auth/change-password" }},
+        { "name": "Logout", "request": { "method": "POST", "url": "{{base_url}}/auth/logout" }},
+        { "name": "Get Me", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{token}}"}], "url": "{{base_url}}/auth/me" }},
+        { "name": "Refresh Token", "request": { "method": "POST", "url": "{{base_url}}/auth/refresh-token" }}
+      ]
+    },
+
+    {
+      "name": "2. Users",
+      "item": [
+        { "name": "Get All Users (Admin)", "request": { "method": "GET", "url": "{{base_url}}/users" }},
+        { "name": "Get User By ID", "request": { "method": "GET", "url": "{{base_url}}/users/{{userId}}" }},
+        { "name": "Delete User", "request": { "method": "DELETE", "url": "{{base_url}}/users/{{userId}}" }},
+        { "name": "Update User", "request": { "method": "PATCH", "url": "{{base_url}}/users/{{userId}}" }}
+      ]
+    },
+
+    {
+      "name": "3. Products",
+      "item": [
+        { "name": "Get Products", "request": { "method": "GET", "url": "{{base_url}}/products" }},
+        { "name": "Get Product By ID", "request": { "method": "GET", "url": "{{base_url}}/products/{{id}}" }},
+        { "name": "Create Product", "request": { "method": "POST", "url": "{{base_url}}/products" }},
+        { "name": "Update Product", "request": { "method": "PATCH", "url": "{{base_url}}/products/{{id}}" }},
+        { "name": "Delete Product", "request": { "method": "DELETE", "url": "{{base_url}}/products/{{id}}" }}
+      ]
+    },
+
+    {
+      "name": "4. Categories & Brands",
+      "item": [
+        { "name": "Get Categories", "request": { "method": "GET", "url": "{{base_url}}/categories" }},
+        { "name": "Create Category", "request": { "method": "POST", "url": "{{base_url}}/categories" }},
+        { "name": "Get Brands", "request": { "method": "GET", "url": "{{base_url}}/brands" }},
+        { "name": "Create Brand", "request": { "method": "POST", "url": "{{base_url}}/brands" }}
+      ]
+    },
+
+    {
+      "name": "5. Cart",
+      "item": [
+        { "name": "Get Cart", "request": { "method": "GET", "url": "{{base_url}}/cart" }},
+        { "name": "Add Item", "request": { "method": "POST", "url": "{{base_url}}/cart/items" }},
+        { "name": "Update Item Quantity", "request": { "method": "PATCH", "url": "{{base_url}}/cart/items/{{id}}" }},
+        { "name": "Remove Item", "request": { "method": "DELETE", "url": "{{base_url}}/cart/items/{{id}}" }}
+      ]
+    },
+
+    {
+      "name": "6. Orders",
+      "item": [
+        { "name": "Create Order (Checkout)", "request": { "method": "POST", "url": "{{base_url}}/orders" }},
+        { "name": "Get My Orders", "request": { "method": "GET", "url": "{{base_url}}/orders" }},
+        { "name": "Get Order By ID", "request": { "method": "GET", "url": "{{base_url}}/orders/{{id}}" }},
+        { "name": "Get All Orders (Admin)", "request": { "method": "GET", "url": "{{base_url}}/admin/orders" }},
+        { "name": "Update Order Status (Admin)", "request": { "method": "PUT", "url": "{{base_url}}/admin/orders/{{id}}/status" }}
+      ]
+    },
+
+    {
+      "name": "7. Payments",
+      "item": [
+        { "name": "Create Payment", "request": { "method": "POST", "url": "{{base_url}}/payments" }},
+        { "name": "Get Payment By ID", "request": { "method": "GET", "url": "{{base_url}}/payments/{{id}}" }}
+      ]
+    },
+
+    {
+      "name": "8. Reviews",
+      "item": [
+        { "name": "Get Product Reviews", "request": { "method": "GET", "url": "{{base_url}}/products/{{id}}/reviews" }},
+        { "name": "Create Review", "request": { "method": "POST", "url": "{{base_url}}/products/{{id}}/reviews" }},
+        { "name": "Update Review", "request": { "method": "PUT", "url": "{{base_url}}/reviews/{{id}}" }},
+        { "name": "Delete Review", "request": { "method": "DELETE", "url": "{{base_url}}/reviews/{{id}}" }}
+      ]
+    }
+
+  ]
+}

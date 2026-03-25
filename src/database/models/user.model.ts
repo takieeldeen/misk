@@ -1,0 +1,69 @@
+import mongoose from "mongoose";
+import z from "zod";
+
+import { UserType } from "../../modules/users/user.types.js";
+import { hashPassword } from "../../utilities/utilis/hash.js";
+
+const userSchema = new mongoose.Schema<UserType>(
+  {
+    activationToken: String,
+    birthDate: {
+      type: Date,
+    },
+    email: {
+      required: [true, "MISSING_PARAMETER_EMAIL"],
+      type: String,
+      unique: true,
+      validate: {
+        message: "INVALID_PARAMETER_EMAIL",
+        validator: (value: string) =>
+          z.email().toLowerCase().trim().safeParse(value).success,
+      },
+    },
+    gender: {
+      enum: ["MALE", "FEMALE"],
+      type: String,
+    },
+    imageUrl: String,
+    name: {
+      required: [true, "MISSING_PARAMETER_NAME"],
+      type: String,
+    },
+    password: {
+      required: [true, "MISSING_PARAMETER_PASSWORD"],
+      select: false,
+      type: String,
+      validate: {
+        message: "INVALID_PARAMETER_PASSWORD",
+        validator: (value: string) =>
+          z.string().min(8).safeParse(value).success,
+      },
+    },
+    phone: String,
+    provider: {
+      default: "LOCAL",
+      enum: ["GOOGLE", "FACEBOOK", "LOCAL"],
+      type: String,
+    },
+    status: {
+      default: "INACTIVE",
+      enum: ["ACTIVE", "INACTIVE"],
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
+    return;
+  } else {
+    this.password = await hashPassword(this.password);
+  }
+});
+
+const UserModel = mongoose.model("User", userSchema);
+
+export default UserModel;
