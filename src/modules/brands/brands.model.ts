@@ -20,9 +20,9 @@ const BrandsSchema = new mongoose.Schema<BrandType>(
       default: "ACTIVE",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const BrandsModel = mongoose.model<BrandType>("Brands", BrandsSchema);
+const BrandsModel = mongoose.model<BrandType>("Brand", BrandsSchema);
 
 export default BrandsModel;

@@ -20,9 +20,12 @@ const CategoriesSchema = new mongoose.Schema<CategoryType>(
       default: "ACTIVE",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const CategoriesModel = mongoose.model<CategoryType>("Categories", CategoriesSchema);
+const CategoriesModel = mongoose.model<CategoryType>(
+  "Category",
+  CategoriesSchema,
+);
 
 export default CategoriesModel;

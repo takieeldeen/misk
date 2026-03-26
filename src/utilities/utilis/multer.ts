@@ -17,3 +17,4 @@ const upload = multer({
 });
 
 export const uploadUserPhoto = upload.single("imageUrl");
+export const uploadProductImages = upload.array("images", 10);
