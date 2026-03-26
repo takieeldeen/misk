@@ -12,6 +12,7 @@ import { AppError } from "../../utilities/utilis/error.js";
 import { createHash, randomBytes } from "crypto";
 import UserModel from "../../database/models/user.model.js";
 import { generateMailTemplate, sendMail } from "../../utilities/utilis/mail.js";
+import { uploadFile } from "../../utilities/utilis/supabase.js";
 
 export const registerHandler: RequestHandler = catchAsync(async (req, res) => {
   const userData = createUserRegisterDto(req.body);
@@ -59,7 +60,7 @@ export const activateAccount = catchAsync(
       status: "success",
       content: createUserInfoDto(user),
     });
-  },
+  }
 );
 
 export const getMeHandler: RequestHandler = catchAsync(async (req, res) => {
@@ -73,28 +74,8 @@ export const getMeHandler: RequestHandler = catchAsync(async (req, res) => {
 
 export const forgetPasswordHandler = catchAsync(async (req, res, next) => {
   const { email } = req.body;
-  if (!email) return next(new AppError(400, "EMAIL_REQUIRED"));
-  const user = await UserModel.findOne({ email });
-  if (!user) throw new AppError(404, "USER_NOT_FOUND");
-  const resetToken = randomBytes(32).toString("hex");
-  const hashedToken = createHash("sha256").update(resetToken).digest("hex");
-  user.passwordResetToken = hashedToken;
-  user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
-  await user.save();
-  await sendMail({
-    to: [user.email],
-    subject: "Misk | Reset Password",
-    html: generateMailTemplate({
-      title: "Reset Password",
-      content:
-        "You requested to reset your password. Click the button below to reset it:",
-      user: user.email,
-      actionTitle: "Reset Password",
-      actionSubtitle:
-        "To get started, please click the button below to reset your password:",
-      actionLink: `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`,
-    }),
-  });
+
+  await AuthService.forgetPassword(email);
   res.status(200).json({
     status: "success",
     message: "Reset password email sent",
@@ -163,17 +144,15 @@ export const updateMeHandler = catchAsync(async (req, res, next) => {
 
   if (req.file) {
     // TODO: Implement image upload to Supabase bucket
-    // const { data, error } = await supabase.storage
-    //   .from('user-photos')
-    //   .upload(`user-${req.user!._id}-${Date.now()}.jpg`, req.file.buffer, {
-    //     contentType: req.file.mimetype,
-    //   });
-    // if (error) throw new AppError(500, "IMAGE_UPLOAD_FAILED");
-    // updateData.imageUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/user-photos/${data.path}`;
-    console.log(
-      "Image buffer available for upload to Supabase",
-      req.file.buffer,
+    const { publicUrl, error } = await uploadFile(
+      req.file as any,
+      `${req.user!._id}.${(req.file as any).originalname.split(".").pop()}`,
+
+      "MISK_BUCKET",
+      "profile_pics/"
     );
+    if (error) throw new AppError(500, "IMAGE_UPLOAD_FAILED");
+    updateData.imageUrl = publicUrl;
   }
 
   const user = await UserModel.findByIdAndUpdate(req.user!._id, updateData, {

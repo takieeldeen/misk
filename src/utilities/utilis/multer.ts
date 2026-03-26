@@ -16,4 +16,4 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
-export const uploadUserPhoto = upload.single("image");
+export const uploadUserPhoto = upload.single("imageUrl");
