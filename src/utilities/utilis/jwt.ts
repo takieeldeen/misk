@@ -13,3 +13,7 @@ export async function signToken(res: Response, user: UserType) {
     maxAge: +process.env.TOKEN_COOKIE_AGE!,
   });
 }
+
+export function verifyToken(token: string) {
+  return jwt.verify(token, process.env.JWT_SECRET!) as { id: string };
+}

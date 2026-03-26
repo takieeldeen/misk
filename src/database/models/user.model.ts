@@ -50,11 +50,26 @@ const userSchema = new mongoose.Schema<UserType>(
       enum: ["ACTIVE", "INACTIVE"],
       type: String,
     },
+    lastlogin: {
+      type: Date,
+      default: null,
+    },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
+    passwordChangedAt: Date,
   },
   {
     timestamps: true,
-  }
+  },
 );
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("password") || this.isNew) {
+    return;
+  }
+  console.log("password change date updated");
+  this.passwordChangedAt = new Date(Date.now() - 1000);
+});
 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) {

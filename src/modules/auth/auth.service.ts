@@ -12,22 +12,32 @@ class AuthService {
       email: loginDTO.email,
     }).select("+password");
     if (!user) throw new AppError(400, "INVALID_CREDENTIALS");
-    if (user.status === "INACTIVE") throw new AppError(400, "ACCOUNT_INACTIVE");
     const validCredentials = await comparePassword(
       loginDTO.password,
-      user.password
+      user.password,
     );
     if (!validCredentials) throw new AppError(400, "INVALID_CREDENTIALS");
+    if (user.status === "INACTIVE") throw new AppError(400, "ACCOUNT_INACTIVE");
+    await UserModel.findOneAndUpdate(
+      { email: user.email },
+      {
+        $set: {
+          lastlogin: new Date(),
+        },
+      },
+    );
     return user;
   }
 
   public static async register(
     registerDTO: AuthRegisterDTO,
-    provider?: UserProviders
+    provider?: UserProviders,
   ) {
     const plainToken = randomBytes(32).toString("hex");
     const hashedToken = createHash("sha256").update(plainToken).digest("hex");
     const userData = { ...registerDTO, provider, activationToken: hashedToken };
+    const userExists = !!(await UserModel.findOne({ email: userData.email }));
+    if (userExists) throw new AppError(400, "EMAIL_ALREADY_IN_USE");
     const user = await UserModel.create(userData);
     await sendMail({
       to: [userData.email],
@@ -52,8 +62,8 @@ class AuthService {
       {
         activationToken: hashedToken,
       },
-      { $set: { activationToken: null } },
-      { new: true }
+      { $set: { activationToken: null, status: "ACTIVE" } },
+      { new: true },
     );
     if (!user) throw new AppError(400, "TOKEN_NOT_FOUND");
     return user;

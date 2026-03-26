@@ -1,3 +1,4 @@
+import { UserType } from "../users/user.types.js";
 import { AuthLoginDTO, AuthRegisterDTO } from "./auth.types.js";
 
 export function createUserLoginDto(body: any): AuthLoginDTO {
@@ -20,4 +21,20 @@ export function createUserRegisterDto(body: unknown): AuthRegisterDTO {
     passwordConfirmation: String(b.passwordConfirmation),
     phone: b.phone,
   };
+}
+
+export function createUserInfoDto(user: UserType) {
+  const userObj =
+    (user as any).toObject instanceof Function ? (user as any).toObject() : user;
+
+  const {
+    password,
+    status,
+    provider,
+    activationToken,
+    __v,
+    ...userInfo
+  } = userObj;
+
+  return userInfo;
 }

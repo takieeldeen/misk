@@ -13,4 +13,8 @@ export interface UserType {
   phone?: string;
   provider: UserProviders;
   status: "ACTIVE" | "INACTIVE";
+  lastlogin?: Date;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
+  passwordChangedAt?: Date;
 }
