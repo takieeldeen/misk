@@ -11,7 +11,7 @@ export const brandCreationHandler = catchAsync(async (req, res, next) => {
       req.file as any,
       `${brandData.nameEn.split(" ").join("-").toLowerCase()}`,
       "MISK_BUCKET",
-      "brands_logos/"
+      "brands_logos/",
     );
     if (error) throw new AppError(500, "IMAGE_UPLOAD_FAILED");
     brandData.imageUrl = publicUrl;
@@ -38,10 +38,10 @@ export const getPaginatedBrandsHandler = catchAsync(async (req, res, next) => {
   const brands = await BrandsServices.getPaginatedBrands(
     Number(page),
     Number(limit),
-    filters as Record<string, string>
+    filters as Record<string, string>,
   );
   const brandsCount = await BrandsServices.getBrandsCount(
-    filters as Record<string, string>
+    filters as Record<string, string>,
   );
   res.status(200).json({
     status: "success",
@@ -49,5 +49,64 @@ export const getPaginatedBrandsHandler = catchAsync(async (req, res, next) => {
     page: Number(page),
     limit: Number(limit),
     total: brandsCount,
+  });
+});
+
+export const updateBrandHandler = catchAsync(async (req, res, next) => {
+  const { brandId } = req.params;
+  const brandData = createBrandCreationDto(req.body);
+  if (req.file) {
+    const { publicUrl, error } = await uploadFile(
+      req.file as any,
+      `${brandData.nameEn.split(" ").join("-").toLowerCase()}`,
+      "MISK_BUCKET",
+      "brands_logos/",
+    );
+    if (error) throw new AppError(500, "IMAGE_UPLOAD_FAILED");
+    brandData.imageUrl = publicUrl;
+  }
+
+  const updatedBrand = await BrandsServices.updateBrand(
+    brandId as any,
+    brandData,
+  );
+  res.status(200).json({
+    status: "success",
+    content: updatedBrand,
+  });
+});
+
+export const deleteBrandHandler = catchAsync(async (req, res, next) => {
+  const { brandId } = req.params;
+  const deletedBrand = await BrandsServices.deleteBrand(brandId as any);
+  res.status(200).json({
+    status: "success",
+    content: deletedBrand,
+  });
+});
+
+export const activateBrandHandler = catchAsync(async (req, res, next) => {
+  const { brandId } = req.params;
+  const activatedBrand = await BrandsServices.activateBrand(brandId as any);
+  res.status(200).json({
+    status: "success",
+    content: activatedBrand,
+  });
+});
+
+export const deactivateBrandHandler = catchAsync(async (req, res, next) => {
+  const { brandId } = req.params;
+  const deactivatedBrand = await BrandsServices.deactivateBrand(brandId as any);
+  res.status(200).json({
+    status: "success",
+    content: deactivatedBrand,
+  });
+});
+
+export const getBrandsValueHelp = catchAsync(async (req, res, next) => {
+  const brandsNames = await BrandsServices.getBrandsNames();
+  res.status(200).json({
+    status: "success",
+    content: brandsNames,
   });
 });

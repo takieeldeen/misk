@@ -17,7 +17,7 @@ export class BrandsServices {
   public static async getPaginatedBrands(
     page: number = 1,
     limit: number = 9,
-    filters: Record<string, string>
+    filters: Record<string, string>,
   ) {
     const skip = (page - 1) * limit;
 
@@ -53,5 +53,56 @@ export class BrandsServices {
 
     const count = await BrandsModel.countDocuments(query);
     return count;
+  }
+
+  public static async updateBrand(
+    brandId: string,
+    brandData: Partial<BrandCreationDto>,
+  ) {
+    const brand = await BrandsModel.findByIdAndUpdate(brandId, brandData, {
+      new: true,
+      runValidators: true,
+    });
+    if (!brand) throw new AppError(404, "BRAND_NOT_FOUND");
+    return brand;
+  }
+
+  public static async deleteBrand(brandId: string) {
+    const brand = await BrandsModel.findByIdAndDelete(brandId);
+    if (!brand) throw new AppError(404, "BRAND_NOT_FOUND");
+    return brand;
+  }
+
+  public static async activateBrand(brandId: string) {
+    const brand = await BrandsModel.findByIdAndUpdate(
+      brandId,
+      { status: "ACTIVE" },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+    if (!brand) throw new AppError(404, "BRAND_NOT_FOUND");
+    return brand;
+  }
+
+  public static async deactivateBrand(brandId: string) {
+    const brand = await BrandsModel.findByIdAndUpdate(
+      brandId,
+      { status: "INACTIVE" },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+    if (!brand) throw new AppError(404, "BRAND_NOT_FOUND");
+    return brand;
+  }
+
+  public static async getBrandsNames() {
+    const brands = await BrandsModel.find({ status: "ACTIVE" }).select(
+      "id nameAr nameEn imageUrl",
+    );
+    return brands;
   }
 }

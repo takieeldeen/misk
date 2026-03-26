@@ -2,14 +2,14 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   "https://jbrjjqmiuuigrsyxefzf.supabase.co",
-  process.env.SUPABASE_PUBLIC_KEY || ""
+  process.env.SUPABASE_PUBLIC_KEY || "",
 );
 
 export async function uploadFile(
   file: any,
   fileName: string,
   bucket: string = "MISK_BUCKET",
-  path = "profile_pics/"
+  path = "profile_pics/",
 ) {
   const { data, error } = await supabase.storage
     .from(bucket)
