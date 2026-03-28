@@ -18,7 +18,7 @@ class AuthService {
     );
     if (!validCredentials) throw new AppError(400, "INVALID_CREDENTIALS");
     if (user.status === "INACTIVE") throw new AppError(400, "ACCOUNT_INACTIVE");
-    await UserModel.findOneAndReplace(
+    await UserModel.findOneAndUpdate(
       { email: user.email },
       {
         $set: {
