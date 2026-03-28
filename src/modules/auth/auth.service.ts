@@ -14,7 +14,7 @@ class AuthService {
     if (!user) throw new AppError(400, "INVALID_CREDENTIALS");
     const validCredentials = await comparePassword(
       loginDTO.password,
-      user.password
+      user.password,
     );
     if (!validCredentials) throw new AppError(400, "INVALID_CREDENTIALS");
     if (user.status === "INACTIVE") throw new AppError(400, "ACCOUNT_INACTIVE");
@@ -24,14 +24,14 @@ class AuthService {
         $set: {
           lastlogin: new Date(),
         },
-      }
+      },
     );
     return user;
   }
 
   public static async register(
     registerDTO: AuthRegisterDTO,
-    provider?: UserProviders
+    provider?: UserProviders,
   ) {
     const plainToken = randomBytes(32).toString("hex");
     const hashedToken = createHash("sha256").update(plainToken).digest("hex");
@@ -58,12 +58,12 @@ class AuthService {
 
   public static async activateEmail(token: string) {
     const hashedToken = createHash("sha256").update(token).digest("hex");
-    const user = await UserModel.findOneAndReplace(
+    const user = await UserModel.findOneAndUpdate(
       {
         activationToken: hashedToken,
       },
       { $set: { activationToken: null, status: "ACTIVE" } },
-      { new: true }
+      { returnDocument: "after" },
     );
     if (!user) throw new AppError(400, "TOKEN_NOT_FOUND");
     return user;

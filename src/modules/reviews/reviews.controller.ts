@@ -2,7 +2,7 @@ import catchAsync from "../../utilities/utilis/catchAsync.js";
 import { ReviewService } from "./reviews.service.js";
 
 export const createReview = catchAsync(async (req, res) => {
-  const { comment, rating } = req.body;
+  const { comment = "", rating } = req.body ?? {};
   const user = req.user?._id!;
   const { productId: product } = req.params as { productId: string };
   const newReviewData = {
@@ -53,5 +53,16 @@ export const getProductReviews = catchAsync(async (req, res) => {
   res.status(200).json({
     status: "success",
     content: reviews,
+  });
+});
+
+export const getProductRatings = catchAsync(async (req, res) => {
+  const { productId } = req.params as { productId: string };
+
+  const ratings = await ReviewService.getProductRatings(productId);
+
+  res.status(200).json({
+    status: "success",
+    content: ratings,
   });
 });

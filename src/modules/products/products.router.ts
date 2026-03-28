@@ -11,10 +11,12 @@ import {
 import { uploadProductImages } from "../../utilities/utilis/multer.js";
 import requireAuth from "../../utilities/middlware/auth.middleware.js";
 import ReviewRouter from "../reviews/reviews.router.js";
+import { getProductRatings } from "../reviews/reviews.controller.js";
 
 const ProductsRouter = Router();
 
 ProductsRouter.use("/:productId/reviews", ReviewRouter);
+ProductsRouter.use("/:productId/ratings", getProductRatings);
 
 ProductsRouter.route("/")
   .post(requireAuth, uploadProductImages, productCreationHandler)
