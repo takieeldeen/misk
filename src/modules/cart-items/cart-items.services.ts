@@ -4,7 +4,10 @@ import { AppError } from "../../utilities/utilis/error.js";
 import { CreateCartItem } from "./cart-items.types.js";
 
 export class CartItemServices {
-  public static async addItemToCart(userId: string, itemData: { variantId: string, quantity: number }) {
+  public static async addItemToCart(
+    userId: string,
+    itemData: { variantId: string; quantity: number }
+  ) {
     // Find the user's cart
     const cart = await CartModel.findOne({ user: userId });
     if (!cart) throw new AppError(404, "CART_NOT_FOUND");
@@ -60,5 +63,11 @@ export class CartItemServices {
     });
 
     return cartItem;
+  }
+
+  public static async clearCart(userId: string) {
+    const cart = await CartModel.findOne({ user: userId });
+    await CartItemModel.deleteMany({ cart: cart?._id });
+    await CartModel.findByIdAndUpdate(cart?._id, { items: [] });
   }
 }
