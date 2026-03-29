@@ -5,6 +5,7 @@ import { comparePassword } from "../../utilities/utilis/hash.js";
 import { UserProviders } from "../users/user.types.js";
 import { AuthLoginDTO, AuthRegisterDTO } from "./auth.types.js";
 import { generateMailTemplate, sendMail } from "../../utilities/utilis/mail.js";
+import { CartServices } from "../cart/cart.services.js";
 
 class AuthService {
   public static async login(loginDTO: AuthLoginDTO) {
@@ -39,6 +40,7 @@ class AuthService {
     const userExists = !!(await UserModel.findOne({ email: userData.email }));
     if (userExists) throw new AppError(400, "EMAIL_ALREADY_IN_USE");
     const user = await UserModel.create(userData);
+    const cart = await CartServices.createCart(user._id);
     await sendMail({
       to: [userData.email],
       subject: "Misk | Welcome To Misk",
