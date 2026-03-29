@@ -1,7 +1,6 @@
 import CartItemModel from "../../database/models/cart-items.model.js";
-import CartModel from "../../database/models/cart-items.model.js";
+import CartModel from "../../database/models/cart.model.js";
 import { AppError } from "../../utilities/utilis/error.js";
-import { CreateCartItem } from "./cart-items.types.js";
 
 export class CartItemServices {
   public static async addItemToCart(
