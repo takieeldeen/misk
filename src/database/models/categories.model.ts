@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { CategoryType } from "./categories.type.js";
+import { CategoryType } from "../../modules/categories/categories.type.js";
 
 const CategoriesSchema = new mongoose.Schema<CategoryType>(
   {
@@ -20,12 +20,12 @@ const CategoriesSchema = new mongoose.Schema<CategoryType>(
       default: "ACTIVE",
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const CategoriesModel = mongoose.model<CategoryType>(
   "Category",
-  CategoriesSchema,
+  CategoriesSchema
 );
 
 export default CategoriesModel;

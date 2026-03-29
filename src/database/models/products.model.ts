@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { ProductType } from "./products.types.js";
+import { ProductType } from "../../modules/products/products.types.js";
 
 const productSchema = new Schema<ProductType>(
   {
@@ -40,7 +40,7 @@ const productSchema = new Schema<ProductType>(
       default: [],
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const ProductModel = model<ProductType>("Product", productSchema);

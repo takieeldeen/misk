@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { CartItemType } from "./cart-items.types.js";
+import { CartItemType } from "../../modules/cart-items/cart-items.types.js";
 
 const CartItemSchema = new Schema<CartItemType>(
   {
@@ -19,7 +19,7 @@ const CartItemSchema = new Schema<CartItemType>(
       min: 1,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const CartItemModel = model<CartItemType>("CartItem", CartItemSchema);

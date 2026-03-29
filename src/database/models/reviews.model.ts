@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ReviewType } from "./reviews.types.js";
+import { ReviewType } from "../../modules/reviews/reviews.types.js";
 
 const ReviewSchema = new mongoose.Schema<ReviewType>(
   {
@@ -23,7 +23,7 @@ const ReviewSchema = new mongoose.Schema<ReviewType>(
       type: String,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 ReviewSchema.index({ user: 1, product: 1 }, { unique: true });

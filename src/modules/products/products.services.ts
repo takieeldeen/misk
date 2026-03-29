@@ -1,5 +1,5 @@
 import { AppError } from "../../utilities/utilis/error.js";
-import ProductModel from "./products.model.js";
+import ProductModel from "../../database/models/products.model.js";
 import { ProductCreationDto } from "./products.types.js";
 
 export class ProductsServices {
@@ -19,7 +19,7 @@ export class ProductsServices {
   public static async getPaginatedProducts(
     page: number = 1,
     limit: number = 9,
-    filters: Record<string, string>,
+    filters: Record<string, string>
   ) {
     const skip = (page - 1) * limit;
 
@@ -85,12 +85,16 @@ export class ProductsServices {
 
   public static async updateProduct(
     productId: string,
-    productData: Partial<ProductCreationDto>,
+    productData: Partial<ProductCreationDto>
   ) {
-    const product = await ProductModel.findByIdAndUpdate(productId, productData, {
-      new: true,
-      runValidators: true,
-    });
+    const product = await ProductModel.findByIdAndUpdate(
+      productId,
+      productData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!product) throw new AppError(404, "PRODUCT_NOT_FOUND");
     return product;
   }
@@ -108,7 +112,7 @@ export class ProductsServices {
       {
         new: true,
         runValidators: true,
-      },
+      }
     );
     if (!product) throw new AppError(404, "PRODUCT_NOT_FOUND");
     return product;
@@ -121,7 +125,7 @@ export class ProductsServices {
       {
         new: true,
         runValidators: true,
-      },
+      }
     );
     if (!product) throw new AppError(404, "PRODUCT_NOT_FOUND");
     return product;

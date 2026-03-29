@@ -1,5 +1,5 @@
 import { AppError } from "../../utilities/utilis/error.js";
-import BrandsModel from "./brands.model.js";
+import BrandsModel from "../../database/models/brands.model.js";
 import { BrandCreationDto } from "./brands.type.js";
 
 export class BrandsServices {
@@ -17,7 +17,7 @@ export class BrandsServices {
   public static async getPaginatedBrands(
     page: number = 1,
     limit: number = 9,
-    filters: Record<string, string>,
+    filters: Record<string, string>
   ) {
     const skip = (page - 1) * limit;
 
@@ -57,7 +57,7 @@ export class BrandsServices {
 
   public static async updateBrand(
     brandId: string,
-    brandData: Partial<BrandCreationDto>,
+    brandData: Partial<BrandCreationDto>
   ) {
     const brand = await BrandsModel.findByIdAndUpdate(brandId, brandData, {
       new: true,
@@ -80,7 +80,7 @@ export class BrandsServices {
       {
         new: true,
         runValidators: true,
-      },
+      }
     );
     if (!brand) throw new AppError(404, "BRAND_NOT_FOUND");
     return brand;
@@ -93,7 +93,7 @@ export class BrandsServices {
       {
         new: true,
         runValidators: true,
-      },
+      }
     );
     if (!brand) throw new AppError(404, "BRAND_NOT_FOUND");
     return brand;
@@ -101,7 +101,7 @@ export class BrandsServices {
 
   public static async getBrandsNames() {
     const brands = await BrandsModel.find({ status: "ACTIVE" }).select(
-      "id nameAr nameEn imageUrl",
+      "id nameAr nameEn imageUrl"
     );
     return brands;
   }

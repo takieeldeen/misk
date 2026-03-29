@@ -1,4 +1,4 @@
-import CartModel from "./cart.model.js";
+import CartModel from "../../database/models/cart.model.js";
 import { AppError } from "../../utilities/utilis/error.js";
 
 export class CartServices {

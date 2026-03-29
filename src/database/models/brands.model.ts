@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { BrandType } from "./brands.type.js";
+import { BrandType } from "../../modules/brands/brands.type.js";
 
 const BrandsSchema = new mongoose.Schema<BrandType>(
   {
@@ -20,7 +20,7 @@ const BrandsSchema = new mongoose.Schema<BrandType>(
       default: "ACTIVE",
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const BrandsModel = mongoose.model<BrandType>("Brand", BrandsSchema);

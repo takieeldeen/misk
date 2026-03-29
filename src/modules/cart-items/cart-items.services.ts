@@ -1,5 +1,5 @@
-import CartItemModel from "./cart-items.model.js";
-import CartModel from "../cart/cart.model.js";
+import CartItemModel from "../../database/models/cart-items.model.js";
+import CartModel from "../../database/models/cart-items.model.js";
 import { AppError } from "../../utilities/utilis/error.js";
 import { CreateCartItem } from "./cart-items.types.js";
 

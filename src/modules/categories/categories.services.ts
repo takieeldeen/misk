@@ -1,5 +1,5 @@
 import { AppError } from "../../utilities/utilis/error.js";
-import CategoriesModel from "./categories.model.js";
+import CategoriesModel from "../../database/models/categories.model.js";
 import { CategoryCreationDto } from "./categories.type.js";
 
 export class CategoriesServices {
@@ -17,7 +17,7 @@ export class CategoriesServices {
   public static async getPaginatedCategories(
     page: number = 1,
     limit: number = 9,
-    filters: Record<string, string>,
+    filters: Record<string, string>
   ) {
     const skip = (page - 1) * limit;
 
@@ -57,12 +57,16 @@ export class CategoriesServices {
 
   public static async updateCategory(
     categoryId: string,
-    categoryData: Partial<CategoryCreationDto>,
+    categoryData: Partial<CategoryCreationDto>
   ) {
-    const category = await CategoriesModel.findByIdAndUpdate(categoryId, categoryData, {
-      new: true,
-      runValidators: true,
-    });
+    const category = await CategoriesModel.findByIdAndUpdate(
+      categoryId,
+      categoryData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!category) throw new AppError(404, "CATEGORY_NOT_FOUND");
     return category;
   }
@@ -80,7 +84,7 @@ export class CategoriesServices {
       {
         new: true,
         runValidators: true,
-      },
+      }
     );
     if (!category) throw new AppError(404, "CATEGORY_NOT_FOUND");
     return category;
@@ -93,7 +97,7 @@ export class CategoriesServices {
       {
         new: true,
         runValidators: true,
-      },
+      }
     );
     if (!category) throw new AppError(404, "CATEGORY_NOT_FOUND");
     return category;
@@ -101,7 +105,7 @@ export class CategoriesServices {
 
   public static async getCategoriesNames() {
     const categories = await CategoriesModel.find({ status: "ACTIVE" }).select(
-      "id nameAr nameEn imageUrl",
+      "id nameAr nameEn imageUrl"
     );
     return categories;
   }
