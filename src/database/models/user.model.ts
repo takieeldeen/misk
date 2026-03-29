@@ -4,6 +4,31 @@ import z from "zod";
 import { UserType } from "../../modules/users/user.types.js";
 import { hashPassword } from "../../utilities/utilis/hash.js";
 
+const addressSchema = new mongoose.Schema(
+  {
+    full_name: { type: String, required: true },
+    phone: { type: String, required: true },
+
+    country: { type: String, default: "Egypt" },
+    city: { type: String, required: true },
+    area: { type: String, required: true },
+
+    address_line_1: { type: String, required: true },
+    address_line_2: { type: String },
+
+    building_number: { type: String },
+    floor: { type: String },
+    apartment: { type: String },
+
+    postal_code: { type: String },
+
+    notes: { type: String },
+
+    is_default: { type: Boolean, default: false },
+  },
+  { _id: true } // each address gets its own id
+);
+
 const userSchema = new mongoose.Schema<UserType>(
   {
     activationToken: String,
@@ -57,10 +82,18 @@ const userSchema = new mongoose.Schema<UserType>(
     passwordResetToken: String,
     passwordResetExpires: Date,
     passwordChangedAt: Date,
+    isAdmin: {
+      default: false,
+      type: Boolean,
+    },
+    addresses: {
+      type: [addressSchema],
+      default: [],
+    },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 userSchema.pre("save", async function () {

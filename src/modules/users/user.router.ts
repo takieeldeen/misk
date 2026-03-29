@@ -1,5 +1,7 @@
 import { Router } from "express";
-import requireAuth from "../../utilities/middlware/auth.middleware.js";
+import requireAuth, {
+  requireAdmin,
+} from "../../utilities/middlware/auth.middleware.js";
 import {
   activateUserHandler,
   deactivateUserHandler,
@@ -12,6 +14,7 @@ import { uploadUserPhoto } from "../../utilities/utilis/multer.js";
 
 const UserRouter = Router();
 
+UserRouter.use(requireAdmin);
 UserRouter.route("/").get(requireAuth, getPaginatedUsersHandler);
 
 UserRouter.route("/:userId")

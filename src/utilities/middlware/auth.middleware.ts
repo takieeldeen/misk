@@ -50,12 +50,12 @@ const requireAuth = catchAsync(
       // 5) Check if password was changed after token was issued
       if (user.passwordChangedAt) {
         const changedTimestamp = Math.floor(
-          user.passwordChangedAt.getTime() / 1000,
+          user.passwordChangedAt.getTime() / 1000
         );
         console.log(
           decoded.iat,
           changedTimestamp,
-          decoded.iat < changedTimestamp,
+          decoded.iat < changedTimestamp
         );
         if (decoded.iat < changedTimestamp) {
           res.cookie("token", "loggedout", {
@@ -74,7 +74,13 @@ const requireAuth = catchAsync(
     } catch (error) {
       return next(new AppError(401, "INVALID_TOKEN"));
     }
-  },
+  }
 );
+
+export const requireAdmin = catchAsync(async (req, res, next) => {
+  if (!req.user?.isAdmin)
+    return next(new AppError(401, "LACKING_NECCESSARY_PERMISSIONS"));
+  next();
+});
 
 export default requireAuth;

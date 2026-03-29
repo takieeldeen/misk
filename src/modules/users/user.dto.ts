@@ -1,12 +1,12 @@
 import { UserInfoDto, UserType } from "./user.types.js";
 
-export function createUserInfoDto(brand: UserType): UserInfoDto {
-  const brandObj =
-    (brand as any).toObject instanceof Function
-      ? (brand as any).toObject()
-      : brand;
+export function createUserInfoDto(user: UserType): UserInfoDto {
+  const userObj =
+    (user as any).toObject instanceof Function
+      ? (user as any).toObject()
+      : user;
 
-  const { ...userInfo } = brandObj;
+  const { ...userInfo } = userObj;
 
   return userInfo;
 }
