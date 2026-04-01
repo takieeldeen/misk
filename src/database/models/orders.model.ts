@@ -7,12 +7,6 @@ const OrdersSchema = new mongoose.Schema<OrderType>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    orderItems: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "OrderItem",
-      },
-    ],
     amountInCents: {
       type: Number,
       required: true,
@@ -28,7 +22,6 @@ const OrdersSchema = new mongoose.Schema<OrderType>(
     paymentMethod: {
       type: String,
       enum: ["CREDIT_CARD", "PAYPAL", "CASH_ON_DELIVERY"],
-      required: true,
     },
     transactionRef: {
       type: String,
@@ -48,10 +41,13 @@ const OrdersSchema = new mongoose.Schema<OrderType>(
       postal_code: String,
       notes: String,
     },
+    cartHash: {
+      type: String,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const OrdersModel = mongoose.model<OrderType>("Order", OrdersSchema);

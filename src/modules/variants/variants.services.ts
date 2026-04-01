@@ -9,7 +9,8 @@ export class VariantServices {
   }
 
   public static async getOneVariant(variantId: string) {
-    const variant = await ProductVariantModel.findById(variantId).populate("product");
+    const variant =
+      await ProductVariantModel.findById(variantId).populate("product");
     if (!variant) throw new AppError(404, "VARIANT_NOT_FOUND");
     return variant;
   }
@@ -26,11 +27,11 @@ export class VariantServices {
     };
 
     if (filters.product) {
-       query.product = filters.product;
+      query.product = filters.product;
     }
 
     if (filters.sku) {
-        query.sku = { $regex: filters.sku, $options: "i" };
+      query.sku = { $regex: filters.sku, $options: "i" };
     }
 
     const variants = await ProductVariantModel.find(query)
@@ -43,16 +44,16 @@ export class VariantServices {
 
   public static async getVariantsCount(filters: Record<string, any>) {
     const query: any = {
-        status: filters.status ? filters.status : { $in: ["ACTIVE", "INACTIVE"] },
-      };
-  
-      if (filters.product) {
-         query.product = filters.product;
-      }
-  
-      if (filters.sku) {
-          query.sku = { $regex: filters.sku, $options: "i" };
-      }
+      status: filters.status ? filters.status : { $in: ["ACTIVE", "INACTIVE"] },
+    };
+
+    if (filters.product) {
+      query.product = filters.product;
+    }
+
+    if (filters.sku) {
+      query.sku = { $regex: filters.sku, $options: "i" };
+    }
 
     const count = await ProductVariantModel.countDocuments(query);
     return count;
@@ -62,10 +63,15 @@ export class VariantServices {
     variantId: string,
     variantData: Partial<CreateProductVariant>,
   ) {
-    const variant = await ProductVariantModel.findByIdAndUpdate(variantId, variantData, {
-      new: true,
-      runValidators: true,
-    });
+    console.log(variantId);
+    const variant = await ProductVariantModel.findByIdAndUpdate(
+      variantId,
+      variantData,
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
     if (!variant) throw new AppError(404, "VARIANT_NOT_FOUND");
     return variant;
   }

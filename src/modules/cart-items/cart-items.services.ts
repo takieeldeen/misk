@@ -1,42 +1,41 @@
 import CartItemModel from "../../database/models/cart-items.model.js";
 import CartModel from "../../database/models/cart.model.js";
 import { AppError } from "../../utilities/utilis/error.js";
+import crypto from "crypto";
 
 export class CartItemServices {
+  // ✅ Add or update item
   public static async addItemToCart(
     userId: string,
-    itemData: { variantId: string; quantity: number }
+    itemData: { variantId: string; quantity: number },
   ) {
-    // Find the user's cart
     const cart = await CartModel.findOne({ user: userId });
     if (!cart) throw new AppError(404, "CART_NOT_FOUND");
 
-    // Check if the item already exists in the cart
     let cartItem = await CartItemModel.findOne({
       cart: cart._id,
       variantId: itemData.variantId,
     });
 
     if (cartItem) {
-      // If it exists, increment the quantity
-      cartItem.quantity += itemData.quantity;
+      // overwrite quantity (cleaner than += for consistency)
+      cartItem.quantity = itemData.quantity;
       await cartItem.save();
     } else {
-      // Otherwise, create a new cart item
       cartItem = await CartItemModel.create({
         cart: cart._id,
         variantId: itemData.variantId,
         quantity: itemData.quantity,
       });
-
-      // And add it to the cart's items array
-      cart.items.push(cartItem._id as any);
-      await cart.save();
     }
+
+    // ✅ ALWAYS recalc from DB (single source of truth)
+    await this.recalculateCartHash(cart._id.toString());
 
     return cartItem;
   }
 
+  // ✅ Update quantity
   public static async updateItemQuantity(itemId: string, quantity: number) {
     if (quantity <= 0) {
       return this.removeItemFromCart(itemId);
@@ -45,10 +44,13 @@ export class CartItemServices {
     const cartItem = await CartItemModel.findByIdAndUpdate(
       itemId,
       { quantity },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!cartItem) throw new AppError(404, "CART_ITEM_NOT_FOUND");
+
+    await this.recalculateCartHash(cartItem.cart.toString());
+
     return cartItem;
   }
 
@@ -56,17 +58,38 @@ export class CartItemServices {
     const cartItem = await CartItemModel.findByIdAndDelete(itemId);
     if (!cartItem) throw new AppError(404, "CART_ITEM_NOT_FOUND");
 
-    // Also remove reference from the cart
-    await CartModel.findByIdAndUpdate(cartItem.cart, {
-      $pull: { items: itemId },
-    });
+    await this.recalculateCartHash(cartItem.cart.toString());
 
     return cartItem;
   }
 
+  // ✅ Clear cart
   public static async clearCart(userId: string) {
     const cart = await CartModel.findOne({ user: userId });
-    await CartItemModel.deleteMany({ cart: cart?._id });
-    await CartModel.findByIdAndUpdate(cart?._id, { items: [] });
+    if (!cart) throw new AppError(404, "CART_NOT_FOUND");
+
+    await CartItemModel.deleteMany({ cart: cart._id });
+
+    await this.recalculateCartHash(cart._id.toString());
+  }
+
+  private static async recalculateCartHash(cartId: string) {
+    const items = await CartItemModel.find({ cart: cartId }).lean();
+
+    const normalized = items
+      .map((item) => ({
+        variantId: item.variantId.toString(),
+        quantity: item.quantity,
+      }))
+      .sort((a, b) => a.variantId.localeCompare(b.variantId));
+
+    const hash = crypto
+      .createHash("sha256")
+      .update(JSON.stringify(normalized))
+      .digest("hex");
+
+    await CartModel.findByIdAndUpdate(cartId, { cartHash: hash });
+
+    return hash;
   }
 }

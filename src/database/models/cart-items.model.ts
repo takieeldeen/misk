@@ -19,7 +19,7 @@ const CartItemSchema = new Schema<CartItemType>(
       min: 1,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const CartItemModel = model<CartItemType>("CartItem", CartItemSchema);

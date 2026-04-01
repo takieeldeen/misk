@@ -1,3 +1,4 @@
+import CartItemModel from "../../database/models/cart-items.model.js";
 import CartModel from "../../database/models/cart.model.js";
 import { AppError } from "../../utilities/utilis/error.js";
 
@@ -10,16 +11,12 @@ export class CartServices {
   }
 
   public static async getUserCart(userId: string) {
-    const cart = await CartModel.findOne({ user: userId })
-      .populate("user")
-      .populate({
-        path: "items",
-        populate: {
-          path: "variantId",
-        },
-      });
+    const cart = await CartModel.findOne({ user: userId }).populate("user").lean();
     if (!cart) throw new AppError(404, "CART_NOT_FOUND");
-    return cart;
+    const items = await CartItemModel.find({ cart: cart._id }).populate(
+      "variantId",
+    );
+    return { ...cart, items };
   }
 
   public static async deleteCart(userId: string) {

@@ -26,7 +26,7 @@ const addressSchema = new mongoose.Schema(
 
     is_default: { type: Boolean, default: false },
   },
-  { _id: true } // each address gets its own id
+  { _id: true }, // each address gets its own id
 );
 
 const userSchema = new mongoose.Schema<UserType>(
@@ -69,6 +69,7 @@ const userSchema = new mongoose.Schema<UserType>(
       default: "LOCAL",
       enum: ["GOOGLE", "FACEBOOK", "LOCAL"],
       type: String,
+      select: false,
     },
     status: {
       default: "INACTIVE",
@@ -93,7 +94,7 @@ const userSchema = new mongoose.Schema<UserType>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 userSchema.pre("save", async function () {

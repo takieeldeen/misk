@@ -8,14 +8,11 @@ const CartSchema = new Schema<CartType>(
       ref: "User",
       required: true,
     },
-    items: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "CartItem",
-      },
-    ],
+    cartHash: {
+      type: String,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const CartModel = model<CartType>("Cart", CartSchema);

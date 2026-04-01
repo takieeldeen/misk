@@ -7,6 +7,7 @@ import ProductsRouter from "../modules/products/products.router.js";
 import VariantsRouter from "../modules/variants/variants.router.js";
 import CartRouter from "../modules/cart/cart.router.js";
 import CartItemsRouter from "../modules/cart-items/cart-items.router.js";
+import OrderRouter from "../modules/orders/orders.router.js";
 
 const APIRouter = Router();
 
@@ -17,5 +18,6 @@ APIRouter.use("/api/v1/products", ProductsRouter);
 APIRouter.use("/api/v1/variants", VariantsRouter);
 APIRouter.use("/api/v1/cart", CartRouter);
 APIRouter.use("/api/v1/cart-items", CartItemsRouter);
+APIRouter.use("/api/v1/orders", OrderRouter);
 
 export default APIRouter;

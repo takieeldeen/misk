@@ -30,12 +30,23 @@ export const OrderItemSchema = new Schema<OrderItemType>(
       min: [0, "TOTAL_PRICE_MUST_BE_NON_NEGATIVE"],
       default: 0,
     },
+    reservedStock: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 OrderItemSchema.pre("save", function () {
   this.totalPriceInCents = this.quantity * this.unitPriceInCents;
 });
+
+const OrderItemModel = mongoose.model<OrderItemType>(
+  "OrderItem",
+  OrderItemSchema,
+);
+
+export default OrderItemModel;

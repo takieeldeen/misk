@@ -10,4 +10,5 @@ export interface OrderItemType {
   totalPriceInCents: number;
   createdAt: Date;
   updatedAt: Date;
+  reservedStock: Number;
 }
