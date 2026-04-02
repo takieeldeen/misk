@@ -25,10 +25,9 @@ export class ReviewService {
   public static async updateReview(
     reviewId: string,
     updateData: ReviewUpdateDto,
-    userId: string
+    userId: string,
   ) {
     const review = await ReviewService.getReviewById(reviewId);
-    console.log(review.user.toString(), userId.toString());
 
     if (review.user.toString() !== userId.toString()) {
       throw new AppError(403, "NOT_AUTHORIZED_TO_UPDATE_REVIEW");
@@ -37,7 +36,7 @@ export class ReviewService {
     const updatedReview = await ReviewModel.findByIdAndUpdate(
       reviewId,
       updateData,
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
     return updatedReview;
   }

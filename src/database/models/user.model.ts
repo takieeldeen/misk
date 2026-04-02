@@ -101,7 +101,6 @@ userSchema.pre("save", async function () {
   if (!this.isModified("password") || this.isNew) {
     return;
   }
-  console.log("password change date updated");
   this.passwordChangedAt = new Date(Date.now() - 1000);
 });
 

@@ -9,9 +9,11 @@ import { OrderType } from "./orders.types.js";
 import ProductVariantModel from "../variants/variants.model.js";
 import OrderItemModel from "../orderItems/orderItems.model.js";
 import { CartServices } from "../cart/cart.services.js";
+import { PaymentService } from "../payments/payments.service.js";
 
 export class OrdersServices {
   public static async checkout(userId: string) {
+    let payment: any;
     await mongoose.connection.transaction(async () => {
       // 1. create new order from the user cart
       const userOrder = await this.createOrder({
@@ -20,7 +22,10 @@ export class OrdersServices {
       });
       // 2. Deduct Stock from inventory
       await this.deductOrderStock(userOrder._id);
+      // 3. start payment process
+      payment = await PaymentService.createPayment(userOrder._id);
     });
+    return payment;
   }
 
   public static async createOrder(orderData: Partial<OrderType>) {
@@ -66,6 +71,15 @@ export class OrdersServices {
         amountInCents: orderTotal,
       });
     } else {
+      //  calculate the order total
+      const orderTotal = this.calculateOrderTotal(cartItems);
+      //  create the order
+      userOrder = await OrdersModel.create({
+        ...orderData,
+        amountInCents: orderTotal,
+        cartHash: userCart.cartHash,
+      });
+
       //  create new order items
       const orderItems = cartItems.map((cartItem: CartItemType) => ({
         order: userOrder._id,
@@ -77,14 +91,6 @@ export class OrdersServices {
         reservedStock: cartItem.quantity,
       }));
       await OrderItemModel.insertMany(orderItems);
-      //  calculate the order total
-      const orderTotal = this.calculateOrderTotal(cartItems);
-      //  create the order
-      userOrder = await OrdersModel.create({
-        ...orderData,
-        amountInCents: orderTotal,
-        cartHash: userCart.cartHash,
-      });
     }
 
     return userOrder;
@@ -156,7 +162,6 @@ export class OrdersServices {
   }
 
   private static checkStock(cartItems: CartItemType[]) {
-    console.log(cartItems);
     for (const cartItem of cartItems) {
       const variant = cartItem.variantId as ProductVariant;
       if (variant.stock < cartItem.quantity) {

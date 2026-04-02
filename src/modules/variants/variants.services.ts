@@ -63,7 +63,6 @@ export class VariantServices {
     variantId: string,
     variantData: Partial<CreateProductVariant>,
   ) {
-    console.log(variantId);
     const variant = await ProductVariantModel.findByIdAndUpdate(
       variantId,
       variantData,

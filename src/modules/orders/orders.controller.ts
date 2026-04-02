@@ -4,10 +4,10 @@ import { OrdersServices } from "./orders.service.js";
 
 export const checkoutHandler = catchAsync(async (req, res, next) => {
   const userId = req.user?._id!;
-  const order = await OrdersServices.checkout(userId);
+  const { payment, redirectionUrl } = await OrdersServices.checkout(userId);
   res.status(200).json({
     status: "success",
-    data: order,
+    data: { payment, redirectionUrl },
   });
 });
 

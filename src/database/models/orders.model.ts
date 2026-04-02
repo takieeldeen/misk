@@ -15,13 +15,12 @@ const OrdersSchema = new mongoose.Schema<OrderType>(
     },
     status: {
       type: String,
-      enum: ["PENDING", "COMPLETED", "CANCELED"],
+      enum: ["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELED"],
       default: "PENDING",
       required: true,
     },
     paymentMethod: {
       type: String,
-      enum: ["CREDIT_CARD", "PAYPAL", "CASH_ON_DELIVERY"],
     },
     transactionRef: {
       type: String,

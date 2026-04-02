@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(APIRouter);
 app.use(errorMiddleware);
 // Background tasks
-cron.schedule("* * * * *", async () => {
+cron.schedule("5 * * * *", async () => {
   console.log("Cleanup job was fired");
   await OrdersServices.restoreIdleStock();
 });
