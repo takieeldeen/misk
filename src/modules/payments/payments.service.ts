@@ -1,12 +1,15 @@
+import mongoose from "mongoose";
 import CartItemModel from "../../database/models/cart-items.model.js";
 import OrdersModel from "../../database/models/orders.model.js";
 import { AppError } from "../../utilities/utilis/error.js";
 import { createIntention } from "../../utilities/utilis/paymob.js";
 import OrderItemModel from "../orderItems/orderItems.model.js";
 import { OrderItemType } from "../orderItems/orderItems.type.js";
+import { OrdersServices } from "../orders/orders.service.js";
 import { OrderType } from "../orders/orders.types.js";
 import { ProductType } from "../products/products.types.js";
 import { UserType } from "../users/user.types.js";
+import ProductVariantModel from "../variants/variants.model.js";
 import { ProductVariant } from "../variants/variants.type.js";
 import PaymentModel from "./payments.model.js";
 import { PaymentType } from "./payments.types.js";
@@ -120,21 +123,40 @@ export class PaymentService {
       paymentMethod: data?.obj?.source_data?.type,
     });
     // TODO: update order items status
-    if (paymentStatus === "PAID" && !this.verifyHmac(data, hmac)) {
+    if (data?.obj?.success && !this.verifyHmac(data, hmac)) {
       throw new AppError(400, "INVALID_HMAC");
     }
-    if (paymentStatus === "PAID") {
+    if (data?.obj?.success) {
       await OrderItemModel.updateMany(
         { order: payment?.order },
         {
           reservedStock: 0,
         },
       );
+    } else {
+      const staleOrderItems = await OrderItemModel.find({
+        order: payment?.order,
+        reservedStock: { $gt: 0 },
+      });
+      await Promise.all(
+        staleOrderItems.map(async (orderItem) => {
+          await ProductVariantModel.findByIdAndUpdate(orderItem.variant, {
+            $inc: { stock: orderItem.quantity },
+          });
+          await OrderItemModel.findByIdAndUpdate(orderItem._id, {
+            $set: { reservedStock: 0 },
+          });
+        }),
+      );
+      // await OrdersServices.restoreIdleStock();
     }
 
     // Clear Cart if successfull order
-    if (paymentStatus === "PAID") {
-      const cart = await CartItemModel.findOne({ user: payment?.user });
+    if (data?.obj?.success) {
+      const cart = await CartItemModel.findOne({
+        user: payment?.user?.toString(),
+      });
+      console.log(payment?.user?.toString());
       await CartItemModel.deleteMany({ cart: cart?._id });
     }
   }
