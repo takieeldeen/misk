@@ -2,6 +2,7 @@
 import mongoose from "mongoose";
 
 import app from "./app.js";
+import migrate from "./database/migrations/migrations.js";
 
 const port = process.env.PORT ?? 3000;
 
@@ -13,6 +14,7 @@ mongoose
   .connect(connectionString ?? "")
   .then(() => {
     console.log("Connected to database");
+    migrate();
   })
   .catch((err: unknown) => {
     console.error("Failed to connect to database", err);

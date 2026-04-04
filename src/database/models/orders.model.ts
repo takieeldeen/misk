@@ -42,6 +42,7 @@ const OrdersSchema = new mongoose.Schema<OrderType>(
     },
     cartHash: {
       type: String,
+      select: false,
     },
   },
   {

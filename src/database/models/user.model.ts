@@ -31,7 +31,7 @@ const addressSchema = new mongoose.Schema(
 
 const userSchema = new mongoose.Schema<UserType>(
   {
-    activationToken: String,
+    activationToken: { select: false, type: String },
     birthDate: {
       type: Date,
     },
@@ -86,6 +86,7 @@ const userSchema = new mongoose.Schema<UserType>(
     isAdmin: {
       default: false,
       type: Boolean,
+      select: false,
     },
     addresses: {
       type: [addressSchema],

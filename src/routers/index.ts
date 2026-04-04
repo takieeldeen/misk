@@ -9,6 +9,8 @@ import CartRouter from "../modules/cart/cart.router.js";
 import CartItemsRouter from "../modules/cart-items/cart-items.router.js";
 import OrderRouter from "../modules/orders/orders.router.js";
 import PaymentRouter from "../modules/payments/payment.router.js";
+import CitiesRouter from "../modules/cities/cities.router.js";
+import UsersRouter from "../modules/users/user.router.js";
 
 const APIRouter = Router();
 
@@ -21,4 +23,6 @@ APIRouter.use("/api/v1/cart", CartRouter);
 APIRouter.use("/api/v1/cart-items", CartItemsRouter);
 APIRouter.use("/api/v1/orders", OrderRouter);
 APIRouter.use("/api/v1/payments", PaymentRouter);
+APIRouter.use("/api/v1/cities", CitiesRouter);
+APIRouter.use("/api/v1/admin/users", UsersRouter);
 export default APIRouter;

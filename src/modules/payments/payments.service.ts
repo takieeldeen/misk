@@ -1,4 +1,5 @@
 import CartItemModel from "../../database/models/cart-items.model.js";
+import CartModel from "../../database/models/cart.model.js";
 import OrdersModel from "../../database/models/orders.model.js";
 import { AppError } from "../../utilities/utilis/error.js";
 import { createIntention } from "../../utilities/utilis/paymob.js";
@@ -102,6 +103,10 @@ export class PaymentService {
 
   public static async handleWebhook(data: any, hmac: string) {
     const paymentStatus = data?.obj?.order?.payment_status;
+    // TODO: update order items status
+    if (paymentStatus === "PAID" && !this.verifyHmac(data, hmac)) {
+      throw new AppError(400, "INVALID_HMAC");
+    }
     const payment = await PaymentModel.findByIdAndUpdate(
       data?.obj?.order?.merchant_order_id,
       {
@@ -115,14 +120,11 @@ export class PaymentService {
       },
     );
     // TODO: update order status
+    const orderStatus = paymentStatus === "PAID" ? "PAID" : "FAILED";
     await OrdersModel.findByIdAndUpdate(payment?.order, {
-      status: paymentStatus,
+      status: orderStatus,
       paymentMethod: data?.obj?.source_data?.type,
     });
-    // TODO: update order items status
-    if (paymentStatus === "PAID" && !this.verifyHmac(data, hmac)) {
-      throw new AppError(400, "INVALID_HMAC");
-    }
     if (paymentStatus === "PAID") {
       await OrderItemModel.updateMany(
         { order: payment?.order },
@@ -134,7 +136,7 @@ export class PaymentService {
 
     // Clear Cart if successfull order
     if (paymentStatus === "PAID") {
-      const cart = await CartItemModel.findOne({ user: payment?.user });
+      const cart = await CartModel.findOne({ user: payment?.user });
       await CartItemModel.deleteMany({ cart: cart?._id });
     }
   }
@@ -173,5 +175,51 @@ export class PaymentService {
       .update(concatenatedString)
       .digest("hex");
     return calculatedHmac === sentHmac;
+  }
+
+  public static async getPaginatedPayments(
+    page: number = 1,
+    limit: number = 9,
+    filters: Record<string, string> = {},
+  ) {
+    const skip = (page - 1) * limit;
+
+    const query: any = {};
+    if (filters.status) query.status = filters.status;
+    if (filters.user) query.user = filters.user;
+    const payments = await PaymentModel.find(query)
+      .skip(skip > 0 ? skip : 0)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+    return payments;
+  }
+
+  public static async getPaymentsCount(filters: Record<string, string>) {
+    const query: any = {};
+    if (filters.status) query.status = filters.status;
+    if (filters.user) query.user = filters.user;
+    const count = await PaymentModel.countDocuments(query);
+    return count;
+  }
+
+  public static async getOnePayment(paymentId: string) {
+    const payment = await PaymentModel.findById(paymentId)
+      .populate("user")
+      .populate("order");
+
+    const orderItems = await OrderItemModel.find({
+      order: payment?.order,
+    }).populate({
+      path: "variant",
+      populate: {
+        path: "product",
+      },
+    });
+    const order = (payment?.order as any)?._doc;
+    const finalOrder = {
+      ...order,
+      items: orderItems,
+    };
+    return { ...(payment as any)._doc, order: finalOrder };
   }
 }

@@ -18,10 +18,10 @@ BrandsRouter.route("/value-help").get(getBrandsValueHelp);
 
 BrandsRouter.route("/")
   .post(requireAuth, uploadUserPhoto, brandCreationHandler)
-  .get(requireAuth, getPaginatedBrandsHandler);
+  .get(getPaginatedBrandsHandler);
 
 BrandsRouter.route("/:brandId")
-  .get(requireAuth, getOneBrandHandler)
+  .get(getOneBrandHandler)
   .delete(requireAuth, deleteBrandHandler)
   .patch(requireAuth, uploadUserPhoto, updateBrandHandler);
 

@@ -18,10 +18,10 @@ CategoriesRouter.route("/value-help").get(getCategoriesValueHelp);
 
 CategoriesRouter.route("/")
   .post(requireAuth, uploadUserPhoto, categoryCreationHandler)
-  .get(requireAuth, getPaginatedCategoriesHandler);
+  .get(getPaginatedCategoriesHandler);
 
 CategoriesRouter.route("/:categoryId")
-  .get(requireAuth, getOneCategoryHandler)
+  .get(getOneCategoryHandler)
   .delete(requireAuth, deleteCategoryHandler)
   .patch(requireAuth, uploadUserPhoto, updateCategoryHandler);
 

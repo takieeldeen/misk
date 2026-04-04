@@ -42,11 +42,10 @@ const requireAuth = catchAsync(
       };
 
       // 4) Check if user still exists
-      const user = await UserModel.findById(decoded.id);
+      const user = await UserModel.findById(decoded.id).select("+isAdmin");
       if (!user) {
         return next(new AppError(401, "USER_NOT_FOUND"));
       }
-
       // 5) Check if password was changed after token was issued
       if (user.passwordChangedAt) {
         const changedTimestamp = Math.floor(
@@ -74,6 +73,7 @@ const requireAuth = catchAsync(
 );
 
 export const requireAdmin = catchAsync(async (req, res, next) => {
+  // if(!req.user)
   if (!req.user?.isAdmin)
     return next(new AppError(401, "LACKING_NECCESSARY_PERMISSIONS"));
   next();

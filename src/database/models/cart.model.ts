@@ -10,6 +10,7 @@ const CartSchema = new Schema<CartType>(
     },
     cartHash: {
       type: String,
+      select: false,
     },
   },
   { timestamps: true },

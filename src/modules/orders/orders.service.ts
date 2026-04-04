@@ -30,7 +30,9 @@ export class OrdersServices {
 
   public static async createOrder(orderData: Partial<OrderType>) {
     // 1. Get User Cart
-    const userCart = await CartModel.findOne({ user: orderData.user });
+    const userCart = await CartModel.findOne({ user: orderData.user }).select(
+      "+cartHash",
+    );
     // 2. If the user has no cart throw error
     if (!userCart) throw new AppError(404, "CART_NOT_FOUND");
     // 3. If the cart is empty throw error
@@ -45,7 +47,9 @@ export class OrdersServices {
     const latestUnsuccessfulOrder = await OrdersModel.findOne({
       user: orderData.user,
       status: { $in: ["PENDING", "FAILED"] },
-    }).sort({ createdAt: -1 });
+    })
+      .sort({ createdAt: -1 })
+      .select("+cartHash");
     // 6. Check if the user has a previous order
     const hasPreviousOrder =
       !!latestUnsuccessfulOrder &&
@@ -96,9 +100,10 @@ export class OrdersServices {
     return userOrder;
   }
 
-  public static async getOneOrder(orderId: string) {
-    const order = await OrdersModel.findById(orderId).populate("user");
-    //   .populate("orderItems");
+  public static async getOneOrder(orderId: string, userId?: string) {
+    const order = await OrdersModel.findOne(
+      userId ? { _id: orderId, user: userId } : { _id: orderId },
+    ).populate("user");
     if (!order) throw new AppError(404, "ORDER_NOT_FOUND");
     return order;
   }
@@ -110,24 +115,14 @@ export class OrdersServices {
   ) {
     const skip = (page - 1) * limit;
 
-    const query: any = {
-      status: filters.status
-        ? filters.status
-        : { $in: ["PENDING", "COMPLETED", "CANCELED"] },
-    };
-
-    if (filters.name) {
-      query.$or = [
-        { nameAr: { $regex: filters.name, $options: "i" } },
-        { nameEn: { $regex: filters.name, $options: "i" } },
-      ];
-    }
-
-    const brands = await OrdersModel.find(query)
+    const query: any = {};
+    if (filters.status) query.status = filters.status;
+    if (filters.user) query.user = filters.user;
+    const orders = await OrdersModel.find(query)
       .skip(skip > 0 ? skip : 0)
       .limit(limit)
       .sort({ createdAt: -1 });
-    return brands;
+    return orders;
   }
 
   public static async getOrdersCount(filters: Record<string, string>) {
@@ -161,10 +156,71 @@ export class OrdersServices {
     return deletedOrder;
   }
 
+  public static async updateOrderStatus(
+    orderId: string,
+    status: OrderType["status"],
+  ) {
+    const validTransitions: Record<string, OrderType["status"][]> = {
+      PENDING: ["CANCELED"],
+      PAID: ["SHIPPED", "CANCELED"],
+      SHIPPED: ["DELIVERED", "CANCELED"],
+      DELIVERED: [],
+      CANCELED: [],
+    };
+
+    const order = await OrdersModel.findById(orderId);
+    if (!order) throw new AppError(404, "ORDER_NOT_FOUND");
+
+    const allowed = validTransitions[order.status] ?? [];
+    if (!allowed.includes(status)) {
+      throw new AppError(
+        400,
+        `INVALID_STATUS_TRANSITION_FROM_${order.status}_TO_${status}`,
+      );
+    }
+
+    if (status === "CANCELED") {
+      await this.restoreOrderStock(orderId);
+    }
+
+    order.status = status;
+    await order.save();
+    return order;
+  }
+
+  public static async cancelMyOrder(orderId: string, userId: string) {
+    const order = await OrdersModel.findOne({ _id: orderId, user: userId });
+    if (!order) throw new AppError(404, "ORDER_NOT_FOUND");
+    if (order.status !== "PENDING") {
+      throw new AppError(400, "ORDER_CANNOT_BE_CANCELED");
+    }
+    await this.restoreOrderStock(orderId);
+    order.status = "CANCELED";
+    await order.save();
+    return order;
+  }
+
+  private static async restoreOrderStock(orderId: string) {
+    const orderItems = await OrderItemModel.find({
+      order: orderId,
+      reservedStock: { $gt: 0 },
+    });
+    await Promise.all(
+      orderItems.map(async (item) => {
+        await ProductVariantModel.findByIdAndUpdate(item.variant, {
+          $inc: { stock: item.reservedStock },
+        });
+        await OrderItemModel.findByIdAndUpdate(item._id, {
+          $set: { reservedStock: 0 },
+        });
+      }),
+    );
+  }
+
   private static checkStock(cartItems: CartItemType[]) {
     for (const cartItem of cartItems) {
       const variant = cartItem.variantId as ProductVariant;
-      if (variant.stock < cartItem.quantity) {
+      if (variant?.stock < cartItem.quantity) {
         return false;
       }
     }
@@ -208,11 +264,6 @@ export class OrdersServices {
       $or: [
         {
           createdAt: {
-            $lt: new Date(Date.now() - 15 * 60 * 1000),
-          },
-        },
-        {
-          updatedAt: {
             $lt: new Date(Date.now() - 15 * 60 * 1000),
           },
         },

@@ -14,17 +14,16 @@ import { uploadUserPhoto } from "../../utilities/utilis/multer.js";
 
 const UserRouter = Router();
 
-UserRouter.use(requireAdmin);
-UserRouter.route("/").get(requireAuth, getPaginatedUsersHandler);
+UserRouter.use(requireAuth, requireAdmin);
+UserRouter.route("/").get(getPaginatedUsersHandler);
 
 UserRouter.route("/:userId")
-  .get(requireAuth, getOneUserHandler)
-  .delete(requireAuth, deleteUserHandler)
-  .patch(requireAuth, uploadUserPhoto, updateUserHandler);
+  .get(getOneUserHandler)
+  .delete(deleteUserHandler)
+  .patch(uploadUserPhoto, updateUserHandler);
 
-UserRouter.route("/:userId/activate").patch(requireAuth, activateUserHandler);
+UserRouter.route("/:userId/activate").patch(activateUserHandler);
 
-UserRouter.route("/:userId/deactivate").patch(
-  requireAuth,
-  deactivateUserHandler
-);
+UserRouter.route("/:userId/deactivate").patch(deactivateUserHandler);
+
+export default UserRouter;

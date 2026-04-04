@@ -20,10 +20,10 @@ ProductsRouter.use("/:productId/ratings", getProductRatings);
 
 ProductsRouter.route("/")
   .post(requireAuth, uploadProductImages, productCreationHandler)
-  .get(requireAuth, getPaginatedProductsHandler);
+  .get(getPaginatedProductsHandler);
 
 ProductsRouter.route("/:productId")
-  .get(requireAuth, getOneProductHandler)
+  .get(getOneProductHandler)
   .delete(requireAuth, deleteProductHandler)
   .patch(requireAuth, uploadProductImages, updateProductHandler);
 
