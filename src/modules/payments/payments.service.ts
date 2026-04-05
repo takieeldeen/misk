@@ -123,7 +123,7 @@ export class PaymentService {
       },
     );
     // TODO: update order status
-    const orderStatus = paymentStatus === "PAID" ? "PAID" : "FAILED";
+    const orderStatus = data?.obj?.success ? "PAID" : "FAILED";
     await OrdersModel.findByIdAndUpdate(payment?.order, {
       status: orderStatus,
       paymentMethod: data?.obj?.source_data?.type,

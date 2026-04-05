@@ -11,6 +11,7 @@ import OrderRouter from "../modules/orders/orders.router.js";
 import PaymentRouter from "../modules/payments/payment.router.js";
 import CitiesRouter from "../modules/cities/cities.router.js";
 import UsersRouter from "../modules/users/user.router.js";
+import InsightsRouter from "../modules/insights/insights.router.js";
 
 const APIRouter = Router();
 
@@ -25,4 +26,5 @@ APIRouter.use("/api/v1/orders", OrderRouter);
 APIRouter.use("/api/v1/payments", PaymentRouter);
 APIRouter.use("/api/v1/cities", CitiesRouter);
 APIRouter.use("/api/v1/admin/users", UsersRouter);
+APIRouter.use("/api/v1/admin/insights", InsightsRouter);
 export default APIRouter;
