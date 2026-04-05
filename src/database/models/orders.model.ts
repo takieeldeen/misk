@@ -19,6 +19,10 @@ const OrdersSchema = new mongoose.Schema<OrderType>(
       default: "PENDING",
       required: true,
     },
+    paidAt: Date,
+    shippedAt: Date,
+    deliveredAt: Date,
+    canceledAt: Date,
     paymentMethod: {
       type: String,
     },

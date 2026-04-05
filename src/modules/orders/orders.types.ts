@@ -8,6 +8,10 @@ export interface OrderType {
   paymentMethod: "CREDIT_CARD" | "PAYPAL" | "CASH_ON_DELIVERY";
   createdAt: Date;
   updatedAt: Date;
+  paidAt?: Date;
+  shippedAt?: Date;
+  deliveredAt?: Date;
+  canceledAt?: Date;
   transactionRef?: string;
   shipping_address: AddressType;
   cartHash?: string;

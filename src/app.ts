@@ -11,7 +11,7 @@ app.use(express.json({ limit: "10kb" }));
 app.use(APIRouter);
 app.use(errorMiddleware);
 // Background tasks
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/10 * * * *", async () => {
   console.log("Cleanup job was fired");
   await OrdersServices.restoreIdleStock();
 });
