@@ -124,6 +124,16 @@ export const _emails = [
   `louie.kuphal39@gmail.com`,
 ];
 
+export const _productImageUrl = [
+  'https://jbrjjqmiuuigrsyxefzf.supabase.co/storage/v1/object/public/MISK_BUCKET/mock_data/pngegg%20(11).png',
+  'https://jbrjjqmiuuigrsyxefzf.supabase.co/storage/v1/object/public/MISK_BUCKET/mock_data/pngegg%20(10).png',
+  'https://jbrjjqmiuuigrsyxefzf.supabase.co/storage/v1/object/public/MISK_BUCKET/mock_data/pngegg%20(9).png',
+  'https://jbrjjqmiuuigrsyxefzf.supabase.co/storage/v1/object/public/MISK_BUCKET/mock_data/pngegg%20(6).png',
+  'https://jbrjjqmiuuigrsyxefzf.supabase.co/storage/v1/object/public/MISK_BUCKET/mock_data/pngegg%20(5).png',
+  'https://jbrjjqmiuuigrsyxefzf.supabase.co/storage/v1/object/public/MISK_BUCKET/mock_data/pngegg%20(4).png',
+  'https://jbrjjqmiuuigrsyxefzf.supabase.co/storage/v1/object/public/MISK_BUCKET/mock_data/pngegg%20(3).png',
+];
+
 // ----------------------------------------------------------------------
 
 export const _fullNames = [
@@ -151,6 +161,54 @@ export const _fullNames = [
   `Harold Mcgrath`,
   `Esperanza Mcintyre`,
   `Mireya Conner`,
+];
+
+export const _productNameAr = [
+  'عطر إنسبايرد بيوتي دارك كاندي للجنسين – كرز ولوز عنبر',
+  'عطر إنسبايرد بيوتي بلاك روز للجنسين – ورد داكن وفانيليا',
+  'عطر إنسبايرد بيوتي جولدن عود للجنسين – عود شرقي وزعفران',
+  'عطر إنسبايرد بيوتي سويت مسك للجنسين – مسك أبيض وفواكه',
+  'عطر إنسبايرد بيوتي فيلفت فانيليا للجنسين – فانيليا ناعمة وكاراميل',
+  'عطر إنسبايرد بيوتي أمبر نايت للجنسين – عنبر دافئ وخشب الصندل',
+  'عطر إنسبايرد بيوتي روزي بيش للجنسين – خوخ وورد ناعم',
+  'عطر إنسبايرد بيوتي ليذر توباكو للجنسين – تبغ وجلد فاخر',
+  'عطر إنسبايرد بيوتي سيترس بلوسوم للجنسين – حمضيات وزهور منعشة',
+  'عطر إنسبايرد بيوتي وايت مسك للجنسين – مسك نقي وزهور بيضاء',
+  'عطر إنسبايرد بيوتي عود ملكي للجنسين – عود فاخر ومسك',
+  'عطر إنسبايرد بيوتي دارك شوكولا للجنسين – شوكولا داكنة وفانيليا',
+  'عطر إنسبايرد بيوتي بلو أوشن للجنسين – نسيم بحري وأخشاب',
+  'عطر إنسبايرد بيوتي فروتي بلِس للجنسين – فواكه استوائية وزهور',
+  'عطر إنسبايرد بيوتي سموكي وود للجنسين – أخشاب مدخنة وعنبر',
+  'عطر إنسبايرد بيوتي لاڤندر دريم للجنسين – لافندر ومسك هادئ',
+  'عطر إنسبايرد بيوتي كاراميل دلايت للجنسين – كراميل وسكر بني',
+  'عطر إنسبايرد بيوتي عنبر روز للجنسين – عنبر وورد دمشقي',
+  'عطر إنسبايرد بيوتي فريش منت للجنسين – نعناع منعش ولمسة حمضية',
+  'عطر إنسبايرد بيوتي سويت بيري للجنسين – توت أحمر وفانيليا',
+  'عطر إنسبايرد بيوتي وودن إليكسير للجنسين – أخشاب عميقة وتوابل',
+];
+
+export const _productNameEn = [
+  'Inspired Beauty Dark Candy Perfume for Unisex – Cherry & Almond Amber',
+  'Inspired Beauty Black Rose Perfume for Unisex – Dark Rose & Vanilla',
+  'Inspired Beauty Golden Oud Perfume for Unisex – Oriental Oud & Saffron',
+  'Inspired Beauty Sweet Musk Perfume for Unisex – White Musk & Fruits',
+  'Inspired Beauty Velvet Vanilla Perfume for Unisex – Soft Vanilla & Caramel',
+  'Inspired Beauty Amber Night Perfume for Unisex – Warm Amber & Sandalwood',
+  'Inspired Beauty Rosy Peach Perfume for Unisex – Peach & Soft Rose',
+  'Inspired Beauty Leather Tobacco Perfume for Unisex – Tobacco & Leather',
+  'Inspired Beauty Citrus Blossom Perfume for Unisex – Citrus & Fresh Florals',
+  'Inspired Beauty White Musk Perfume for Unisex – Pure Musk & White Flowers',
+  'Inspired Beauty Royal Oud Perfume for Unisex – Premium Oud & Musk',
+  'Inspired Beauty Dark Chocolate Perfume for Unisex – Dark Chocolate & Vanilla',
+  'Inspired Beauty Blue Ocean Perfume for Unisex – Marine Breeze & Woods',
+  'Inspired Beauty Fruity Bliss Perfume for Unisex – Tropical Fruits & Florals',
+  'Inspired Beauty Smoky Wood Perfume for Unisex – Smoked Woods & Amber',
+  'Inspired Beauty Lavender Dream Perfume for Unisex – Lavender & Soft Musk',
+  'Inspired Beauty Caramel Delight Perfume for Unisex – Caramel & Brown Sugar',
+  'Inspired Beauty Amber Rose Perfume for Unisex – Amber & Damask Rose',
+  'Inspired Beauty Fresh Mint Perfume for Unisex – Mint & Citrus Touch',
+  'Inspired Beauty Sweet Berry Perfume for Unisex – Red Berries & Vanilla',
+  'Inspired Beauty Wooden Elixir Perfume for Unisex – Deep Woods & Spices',
 ];
 
 export const _firstNames = [

@@ -145,6 +145,22 @@ export const _ecommerceBestSalesman = [...Array(5)].map((_, index) => {
   };
 });
 
+export const _stockAlerts = [...Array(5)].map((_, index) => ({
+  _id: _mock.id(index),
+  nameAr: _mock.productNameAr(index),
+  nameEn: _mock.productNameEn(index),
+  stock: Math.floor(Math.random() * 10) > 5 ? Math.floor(Math.random() * 10) : 0,
+  imageUrl: _mock.productImageUrl(index),
+}));
+
+export const _topSellingProducts = [...Array(5)].map((_, index) => ({
+  _id: _mock.id(index),
+  nameAr: _mock.productNameAr(index),
+  nameEn: _mock.productNameEn(index),
+  sold: _mock.number.nativeL(index),
+  imageUrl: _mock.productImageUrl(index),
+}));
+
 export const _ecommerceLatestProducts = [...Array(5)].map((_, index) => {
   const colors = (index === 0 && ['#2EC4B6', '#E71D36', '#FF9F1C', '#011627']) ||
     (index === 1 && ['#92140C', '#FFCF99']) ||

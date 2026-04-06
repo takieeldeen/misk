@@ -1,3 +1,5 @@
+'use client';
+
 import type { PopoverProps } from '@mui/material/Popover';
 
 import { useState, useCallback } from 'react';

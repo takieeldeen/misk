@@ -8,7 +8,10 @@ import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 
 import { CONFIG } from 'src/config-global';
 import { primary } from 'src/theme/core/palette';
+import { LocalizationProvider } from 'src/locales';
+import { detectLanguage } from 'src/locales/server';
 import { schemeConfig } from 'src/theme/scheme-config';
+import { I18nProvider } from 'src/locales/i18n-provider';
 import { ThemeProvider } from 'src/theme/theme-provider';
 
 import { ProgressBar } from 'src/components/progress-bar';
@@ -39,6 +42,8 @@ type Props = {
 };
 
 export default async function RootLayout({ children }: Props) {
+  const lang = CONFIG.isStaticExport ? 'en' : await detectLanguage();
+  console.log(lang);
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
@@ -46,18 +51,21 @@ export default async function RootLayout({ children }: Props) {
           defaultMode={schemeConfig.defaultMode}
           modeStorageKey={schemeConfig.modeStorageKey}
         />
-
-        <AuthProvider>
-          <SettingsProvider settings={defaultSettings}>
-            <ThemeProvider>
-              <MotionLazy>
-                <ProgressBar />
-                <SettingsDrawer />
-                {children}
-              </MotionLazy>
-            </ThemeProvider>
-          </SettingsProvider>
-        </AuthProvider>
+        <I18nProvider lang={CONFIG.isStaticExport ? undefined : lang}>
+          <LocalizationProvider>
+            <AuthProvider>
+              <SettingsProvider settings={defaultSettings}>
+                <ThemeProvider>
+                  <MotionLazy>
+                    <ProgressBar />
+                    <SettingsDrawer />
+                    {children}
+                  </MotionLazy>
+                </ThemeProvider>
+              </SettingsProvider>
+            </AuthProvider>
+          </LocalizationProvider>
+        </I18nProvider>
       </body>
     </html>
   );

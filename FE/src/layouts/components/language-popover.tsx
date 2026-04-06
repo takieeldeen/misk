@@ -1,5 +1,6 @@
 'use client';
 
+import type { LanguageValue } from 'src/locales';
 import type { IconButtonProps } from '@mui/material/IconButton';
 
 import { m } from 'framer-motion';
@@ -9,8 +10,11 @@ import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 
+import { useTranslate } from 'src/locales';
+
 import { varHover } from 'src/components/animate';
 import { FlagIcon } from 'src/components/iconify';
+import { useSettingsContext } from 'src/components/settings';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
@@ -25,17 +29,19 @@ export type LanguagePopoverProps = IconButtonProps & {
 
 export function LanguagePopover({ data = [], sx, ...other }: LanguagePopoverProps) {
   const popover = usePopover();
-
+  const { onChangeLang, currentLang } = useTranslate();
   const [locale, setLocale] = useState<string>(data[0].value);
-
-  const currentLang = data.find((lang) => lang.value === locale);
+  const settings = useSettingsContext();
+  // const currentLang = data.find((lang) => lang.value === locale);
 
   const handleChangeLang = useCallback(
     (newLang: string) => {
+      onChangeLang(newLang as LanguageValue);
       setLocale(newLang);
       popover.onClose();
+      settings.onUpdateField('direction', newLang === 'ar' ? 'rtl' : 'ltr');
     },
-    [popover]
+    [popover, onChangeLang, settings]
   );
 
   return (

@@ -1,0 +1,35 @@
+{
+  "demo": {
+    "lang": "Arabic",
+    "description": "نقطة البداية لمشروعك التالي مستندة إلى MUI. التخصيص السهل يساعدك على بناء التطبيقات بشكل أسرع وأفضل."
+  },
+  "insights": {
+    "product_sold": "المنتجات المباعة",
+    "total_balance": "إجمالي الرصيد",
+    "sales_profit": "ربح المبيعات",
+    "sale_by_gender": "المبيعات حسب الجنس",
+    "yearly_sales": "المبيعات السنوية",
+    "than_last_year": "(+43%) من العام الماضي",
+    "top_selling_products": "المنتجات الأكثر مبيعاً",
+    "product_name": "اسم المنتج",
+    "sold": "تم البيع",
+    "stock_alerts": "تنبيهات المخزون",
+    "stock_out": "نفد",
+    "stock_low": "منخفض",
+    "stock_in": "متوفر",
+    "mens": "رجالي",
+    "womens": "نسائي",
+    "kids": "أطفال"
+  },
+  "navbar": {
+    "overview": "نظرة عامة",
+    "insights": "الرؤى",
+    "two": "اثنان",
+    "three": "ثلاثة",
+    "management": "الإدارة",
+    "group": "مجموعة",
+    "four": "أربعة",
+    "five": "خمسة",
+    "six": "ستة"
+  }
+}

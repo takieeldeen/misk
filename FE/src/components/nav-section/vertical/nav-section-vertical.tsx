@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
@@ -27,7 +29,7 @@ export function NavSectionVertical({
     ...navSectionCssVars.vertical(theme),
     ...overridesVars,
   };
-
+  console.log(data);
   return (
     <Stack component="nav" className={navSectionClasses.vertical.root} sx={{ ...cssVars, ...sx }}>
       <NavUl sx={{ flex: '1 1 auto', gap: 'var(--nav-item-gap)' }}>

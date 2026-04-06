@@ -1,3 +1,5 @@
+'use client';
+
 import type { PaperProps } from '@mui/material/Paper';
 
 import Popover from '@mui/material/Popover';
