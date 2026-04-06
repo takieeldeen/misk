@@ -8,6 +8,7 @@ import { useTheme } from '@mui/material/styles';
 import CardHeader from '@mui/material/CardHeader';
 
 import { Chart, useChart } from 'src/components/chart';
+import { useSettingsContext } from 'src/components/settings';
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +31,7 @@ type Props = CardProps & {
 
 export function EcommerceYearlySales({ title, subheader, chart, ...other }: Props) {
   const theme = useTheme();
-
+  const { direction } = useSettingsContext();
   const [selectedSeries, setSelectedSeries] = useState('2023');
 
   const chartColors = chart.colors ?? [theme.palette.primary.main, theme.palette.warning.main];
@@ -38,6 +39,9 @@ export function EcommerceYearlySales({ title, subheader, chart, ...other }: Prop
   const chartOptions = useChart({
     colors: chartColors,
     xaxis: { categories: chart.categories },
+    yaxis: {
+      opposite: direction === 'rtl',
+    },
     ...chart.options,
   });
 

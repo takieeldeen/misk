@@ -32,7 +32,7 @@ import { SettingsButton } from '../components/settings-button';
 import { LanguagePopover } from '../components/language-popover';
 import { ContactsPopover } from '../components/contacts-popover';
 import { WorkspacesPopover } from '../components/workspaces-popover';
-import { navData as dashboardNavData } from '../config-nav-dashboard';
+import { useNavData } from '../config-nav-dashboard';
 import { NotificationsDrawer } from '../components/notifications-drawer';
 
 // ----------------------------------------------------------------------
@@ -56,6 +56,8 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
   const settings = useSettingsContext();
 
   const navColorVars = useNavColorVars(theme, settings);
+
+  const dashboardNavData = useNavData();
 
   const layoutQuery: Breakpoint = 'lg';
 

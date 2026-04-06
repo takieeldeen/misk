@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
+
 import { paths } from 'src/routes/paths';
 
 import { CONFIG } from 'src/config-global';
+import { useTranslate } from 'src/locales';
 
 import { SvgColor } from 'src/components/svg-color';
 
@@ -41,34 +44,43 @@ const ICONS = {
 
 // ----------------------------------------------------------------------
 
-export const navData = [
-  /**
-   * Overview
-   */
-  {
-    subheader: 'Overview 6.0.0',
-    items: [
-      { title: 'Insights', path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: 'Two', path: paths.dashboard.two, icon: ICONS.ecommerce },
-      { title: 'Three', path: paths.dashboard.three, icon: ICONS.analytics },
-    ],
-  },
-  /**
-   * Management
-   */
-  {
-    subheader: 'Management',
-    items: [
+export function useNavData() {
+  const { t } = useTranslate();
+
+  const data = useMemo(
+    () => [
+      /**
+       * Overview
+       */
       {
-        title: 'Group',
-        path: paths.dashboard.group.root,
-        icon: ICONS.user,
-        children: [
-          { title: 'Four', path: paths.dashboard.group.root },
-          { title: 'Five', path: paths.dashboard.group.five },
-          { title: 'Six', path: paths.dashboard.group.six },
+        subheader: t('navbar.overview'),
+        items: [
+          { title: t('navbar.insights'), path: paths.dashboard.root, icon: ICONS.dashboard },
+          { title: t('navbar.two'), path: paths.dashboard.two, icon: ICONS.ecommerce },
+          { title: t('navbar.three'), path: paths.dashboard.three, icon: ICONS.analytics },
+        ],
+      },
+      /**
+       * Management
+       */
+      {
+        subheader: t('navbar.management'),
+        items: [
+          {
+            title: t('navbar.group'),
+            path: paths.dashboard.group.root,
+            icon: ICONS.user,
+            children: [
+              { title: t('navbar.four'), path: paths.dashboard.group.root },
+              { title: t('navbar.five'), path: paths.dashboard.group.five },
+              { title: t('navbar.six'), path: paths.dashboard.group.six },
+            ],
+          },
         ],
       },
     ],
-  },
-];
+    [t]
+  );
+
+  return data;
+}

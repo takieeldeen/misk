@@ -1,6 +1,10 @@
 'use client';
 
+import type { ThemeDirection } from 'src/theme/types';
+
 import { useMemo, useState, useCallback, createContext } from 'react';
+
+import { useParams } from 'src/routes/hooks';
 
 import { useCookies } from 'src/hooks/use-cookies';
 import { useLocalStorage } from 'src/hooks/use-local-storage';
@@ -22,6 +26,10 @@ export function SettingsProvider({
   settings,
   caches = 'localStorage',
 }: SettingsProviderProps) {
+  const params = useParams();
+
+  const lang = params?.lang;
+
   const cookies = useCookies<SettingsState>(STORAGE_KEY, settings, defaultSettings);
 
   const localStorage = useLocalStorage<SettingsState>(STORAGE_KEY, settings);
@@ -41,6 +49,8 @@ export function SettingsProvider({
   const memoizedValue = useMemo(
     () => ({
       ...values.state,
+      direction: (lang === 'ar' ? 'rtl' : 'ltr') as ThemeDirection,
+      fontFamily: lang === 'ar' ? 'Cairo' : values.state.fontFamily,
       canReset: values.canReset,
       onReset: values.resetState,
       onUpdate: values.setState,
@@ -50,6 +60,7 @@ export function SettingsProvider({
       onToggleDrawer,
     }),
     [
+      lang,
       values.state,
       values.setField,
       values.setState,

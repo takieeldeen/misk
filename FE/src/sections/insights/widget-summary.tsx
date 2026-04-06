@@ -9,6 +9,7 @@ import { useTheme } from '@mui/material/styles';
 
 import { fNumber, fPercent } from 'src/utils/format-number';
 
+import { useTranslate } from 'src/locales';
 import { varAlpha, stylesMode } from 'src/theme/styles';
 
 import { Iconify } from 'src/components/iconify';
@@ -30,7 +31,7 @@ type Props = CardProps & {
 
 export function EcommerceWidgetSummary({ title, percent, total, chart, sx, ...other }: Props) {
   const theme = useTheme();
-
+  const { t } = useTranslate();
   const chartColors = chart.colors ?? [theme.palette.primary.light, theme.palette.primary.main];
 
   const chartOptions = useChart({
@@ -94,7 +95,7 @@ export function EcommerceWidgetSummary({ title, percent, total, chart, sx, ...ot
         {fPercent(percent)}
       </Box>
       <Box component="span" sx={{ color: 'text.secondary', typography: 'body2' }}>
-        last week
+        {t('insights.last_week')}
       </Box>
     </Box>
   );

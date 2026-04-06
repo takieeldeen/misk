@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import dayjs from 'dayjs';
 
 import { Container } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -19,6 +20,10 @@ export default function InsightsView() {
   const theme = useTheme();
   const { t } = useTranslate();
 
+  const monthsLabels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((m) =>
+    dayjs().month(m).format('MMM')
+  );
+
   return (
     <Container sx={{ my: 10 }}>
       <Grid container spacing={3}>
@@ -28,7 +33,7 @@ export default function InsightsView() {
             percent={2.6}
             total={765}
             chart={{
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+              categories: monthsLabels.slice(0, 8),
               series: [22, 8, 35, 50, 82, 84, 77, 12],
             }}
           />
@@ -41,7 +46,7 @@ export default function InsightsView() {
             total={18765}
             chart={{
               colors: [theme.vars.palette.warning.light, theme.vars.palette.warning.main],
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+              categories: monthsLabels.slice(0, 8),
               series: [56, 47, 40, 62, 73, 30, 23, 54],
             }}
           />
@@ -54,7 +59,7 @@ export default function InsightsView() {
             total={4876}
             chart={{
               colors: [theme.vars.palette.error.light, theme.vars.palette.error.main],
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+              categories: monthsLabels.slice(0, 8),
               series: [40, 70, 75, 70, 50, 28, 7, 64],
             }}
           />
@@ -81,20 +86,7 @@ export default function InsightsView() {
             title={t('insights.yearly_sales')}
             subheader={t('insights.than_last_year')}
             chart={{
-              categories: [
-                'Jan',
-                'Feb',
-                'Mar',
-                'Apr',
-                'May',
-                'Jun',
-                'Jul',
-                'Aug',
-                'Sep',
-                'Oct',
-                'Nov',
-                'Dec',
-              ],
+              categories: monthsLabels,
               series: [
                 {
                   name: '2022',
@@ -131,7 +123,11 @@ export default function InsightsView() {
         </Grid>
 
         <Grid xs={12} md={6} lg={4}>
-          <StockAlert title={t('insights.stock_alerts')} list={_stockAlerts} sx={{ height: '100%' }} />
+          <StockAlert
+            title={t('insights.stock_alerts')}
+            list={_stockAlerts}
+            sx={{ height: '100%' }}
+          />
         </Grid>
       </Grid>
     </Container>

@@ -8,6 +8,7 @@ import { useTheme, alpha as hexAlpha } from '@mui/material/styles';
 
 import { fNumber } from 'src/utils/format-number';
 
+import { useTranslate } from 'src/locales';
 import { varAlpha } from 'src/theme/styles';
 
 import { Chart, useChart, ChartLegends } from 'src/components/chart';
@@ -30,6 +31,8 @@ type Props = CardProps & {
 
 export function EcommerceSaleByGender({ title, subheader, total, chart, ...other }: Props) {
   const theme = useTheme();
+
+  const { t } = useTranslate();
 
   const chartSeries = chart.series.map((item) => item.value);
 
@@ -59,7 +62,7 @@ export function EcommerceSaleByGender({ title, subheader, total, chart, ...other
         hollow: { margin: 10, size: '32%' },
         track: { margin: 10, background: varAlpha(theme.vars.palette.grey['500Channel'], 0.08) },
         dataLabels: {
-          total: { formatter: () => fNumber(total) },
+          total: { label: t('insights.total'), formatter: () => fNumber(total) },
           value: { offsetY: 2, fontSize: theme.typography.h5.fontSize as string },
           name: { offsetY: -10 },
         },

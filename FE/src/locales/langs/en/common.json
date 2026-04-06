@@ -19,7 +19,9 @@
     "stock_in": "In Stock",
     "mens": "Mens",
     "womens": "Womens",
-    "kids": "Kids"
+    "kids": "Kids",
+    "total": "Total",
+    "last_week": "Last Week"
   },
   "navbar": {
     "overview": "Overview",

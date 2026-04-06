@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRouter } from 'src/routes/hooks';
+import { useRouter, useParams, usePathname } from 'src/routes/hooks';
 
 import { toast } from 'src/components/snackbar';
 
@@ -18,12 +18,13 @@ import type { LanguageValue } from './config-locales';
 export function useTranslate(ns?: string) {
   const router = useRouter();
 
+  const pathname = usePathname();
+  const { lang: resolvedLanguage } = useParams();
   const { t, i18n } = useTranslation(ns);
 
   const fallback = allLangs.filter((lang) => lang.value === fallbackLng)[0];
-
-  const currentLang = allLangs.find((lang) => lang.value === i18n.resolvedLanguage);
-
+  const currentLang = allLangs.find((lang) => lang.value === resolvedLanguage);
+  console.log(currentLang, 'Current Langugage');
   const onChangeLang = useCallback(
     async (newLang: LanguageValue) => {
       try {
@@ -41,12 +42,16 @@ export function useTranslate(ns?: string) {
           dayjs.locale(currentLang.adapterLocale);
         }
 
+        const newPathname = pathname.replace(/^\/[a-z]{2}/, `/${newLang}`);
+
+        router.push(newPathname);
+
         router.refresh();
       } catch (error) {
         console.error(error);
       }
     },
-    [currentLang, i18n, router]
+    [currentLang, i18n, pathname, router]
   );
 
   return {
