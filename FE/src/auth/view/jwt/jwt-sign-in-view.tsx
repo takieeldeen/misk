@@ -9,6 +9,7 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
+import { Stack, Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
@@ -18,8 +19,10 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { useTranslate } from 'src/locales';
+
 import { Iconify } from 'src/components/iconify';
-import { Form, Field } from 'src/components/hook-form';
+import { Form, RHFTextField } from 'src/components/hook-form';
 
 import { useAuthContext } from '../../hooks';
 import { FormHead } from '../../components/form-head';
@@ -27,23 +30,17 @@ import { signInWithPassword } from '../../context/jwt';
 
 // ----------------------------------------------------------------------
 
-export type SignInSchemaType = zod.infer<typeof SignInSchema>;
-
-export const SignInSchema = zod.object({
-  email: zod
-    .string()
-    .min(1, { message: 'Email is required!' })
-    .email({ message: 'Email must be a valid email address!' }),
-  password: zod
-    .string()
-    .min(1, { message: 'Password is required!' })
-    .min(6, { message: 'Password must be at least 6 characters!' }),
-});
+export type SignInSchemaType = {
+  email: string;
+  password: string;
+};
 
 // ----------------------------------------------------------------------
 
 export function JwtSignInView() {
   const router = useRouter();
+
+  const { t } = useTranslate('auth');
 
   const { checkUserSession } = useAuthContext();
 
@@ -55,6 +52,17 @@ export function JwtSignInView() {
     email: 'demo@minimals.cc',
     password: '@demo1',
   };
+
+  const SignInSchema = zod.object({
+    email: zod
+      .string()
+      .min(1, { message: t('email_required') })
+      .email({ message: t('email_invalid') }),
+    password: zod
+      .string()
+      .min(1, { message: t('password_required') })
+      .min(6, { message: t('password_min_length') }),
+  });
 
   const methods = useForm<SignInSchemaType>({
     resolver: zodResolver(SignInSchema),
@@ -80,26 +88,16 @@ export function JwtSignInView() {
 
   const renderForm = (
     <Box gap={3} display="flex" flexDirection="column">
-      <Field.Text name="email" label="Email address" InputLabelProps={{ shrink: true }} />
-
-      <Box gap={1.5} display="flex" flexDirection="column">
-        <Link
-          component={RouterLink}
-          href="#"
-          variant="body2"
-          color="inherit"
-          sx={{ alignSelf: 'flex-end' }}
-        >
-          Forgot password?
-        </Link>
-
-        <Field.Text
+      <Stack spacing={1}>
+        <Typography sx={{ fontWeight: 600, fontSize: 15 }}>{t('email_address')}</Typography>
+        <RHFTextField name="email" />
+      </Stack>
+      <Stack spacing={1}>
+        <Typography sx={{ fontWeight: 600, fontSize: 15 }}>{t('password')}</Typography>
+        <RHFTextField
           name="password"
-          label="Password"
-          placeholder="6+ characters"
-          type={password.value ? 'text' : 'password'}
-          InputLabelProps={{ shrink: true }}
           InputProps={{
+            type: password.value ? 'text' : 'password',
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton onClick={password.onToggle} edge="end">
@@ -109,18 +107,27 @@ export function JwtSignInView() {
             ),
           }}
         />
-      </Box>
+        <Link
+          component={RouterLink}
+          href="#"
+          variant="body2"
+          color="inherit"
+          sx={{ alignSelf: 'flex-end' }}
+        >
+          {t('forgot_password')}
+        </Link>
+      </Stack>
 
       <LoadingButton
         fullWidth
-        color="inherit"
+        color="primary"
         size="large"
         type="submit"
         variant="contained"
         loading={isSubmitting}
-        loadingIndicator="Sign in..."
+        loadingIndicator={t('signing_in')}
       >
-        Sign in
+        {t('sign_in')}
       </LoadingButton>
     </Box>
   );
@@ -128,29 +135,19 @@ export function JwtSignInView() {
   return (
     <>
       <FormHead
-        title="Sign in to your account"
+        title={t('sign_in_title')}
         description={
           <>
-            {`Don’t have an account? `}
+            {`${t('dont_have_account')} `}
             <Link component={RouterLink} href={paths.auth.jwt.signUp} variant="subtitle2">
-              Get started
+              {t('get_started')}
             </Link>
           </>
         }
         sx={{ textAlign: { xs: 'center', md: 'left' } }}
       />
 
-      <Alert severity="info" sx={{ mb: 3 }}>
-        Use <strong>{defaultValues.email}</strong>
-        {' with password '}
-        <strong>{defaultValues.password}</strong>
-      </Alert>
-
-      {!!errorMsg && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {errorMsg}
-        </Alert>
-      )}
+      {/* {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>} */}
 
       <Form methods={methods} onSubmit={onSubmit}>
         {renderForm}

@@ -25,7 +25,7 @@ export default function InsightsView() {
   );
 
   return (
-    <Container sx={{ my: 10 }}>
+    <Container sx={{ my: 10, minWidth: '100%' }}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
           <EcommerceWidgetSummary

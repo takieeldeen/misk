@@ -3,7 +3,11 @@ import { hasParams, removeParams, isExternalLink, removeLastSlash } from '../uti
 
 // ----------------------------------------------------------------------
 
-export function useActiveLink(itemPath: string, deep: boolean = true): boolean {
+export function useActiveLink(
+  itemPath: string,
+  deep: boolean = true,
+  locale: string = 'en'
+): boolean {
   const pathname = removeLastSlash(usePathname());
 
   const pathHasParams = hasParams(itemPath);
@@ -51,5 +55,6 @@ export function useActiveLink(itemPath: string, deep: boolean = true): boolean {
    * @itemPath 			 = '/dashboard/calendar'
    * @match pathname = '/dashboard/calendar'
    */
-  return pathname === itemPath;
+  // console.log(`/${locale}${itemPath}`, pathname);
+  return `/${locale}${itemPath}` === pathname;
 }

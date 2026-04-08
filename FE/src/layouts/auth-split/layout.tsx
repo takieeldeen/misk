@@ -89,7 +89,7 @@ export function AuthSplitLayout({ sx, section, children, header }: AuthSplitLayo
       sx={sx}
     >
       <Main layoutQuery={layoutQuery}>
-        <Section
+        {/* <Section
           title={section?.title}
           layoutQuery={layoutQuery}
           imgUrl={section?.imgUrl}
@@ -122,7 +122,7 @@ export function AuthSplitLayout({ sx, section, children, header }: AuthSplitLayo
               icon: `${CONFIG.assetsDir}/assets/icons/platforms/ic-supabase.svg`,
             },
           ]}
-        />
+        /> */}
         <Content layoutQuery={layoutQuery}>{children}</Content>
       </Main>
     </LayoutSection>
