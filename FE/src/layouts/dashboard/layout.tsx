@@ -66,7 +66,6 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
   const isNavMini = settings.navLayout === 'mini';
   const isNavHorizontal = settings.navLayout === 'horizontal';
   const isNavVertical = isNavMini || settings.navLayout === 'vertical';
-  console.log(data);
   return (
     <LayoutSection
       /** **************************************

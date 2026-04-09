@@ -19,7 +19,7 @@
     "stock_in": "متوفر",
     "mens": "رجالي",
     "womens": "نسائي",
-    "kids": "أطفال",
+    "neutral": "محايد",
     "total": "الإجمالي",
     "last_week": "الأسبوع الماضي"
   },
@@ -32,6 +32,58 @@
     "group": "مجموعة",
     "four": "أربعة",
     "five": "خمسة",
-    "six": "ستة"
+    "six": "ستة",
+    "brands": "الماركات"
+  },
+  "brands": {
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "category": "الفئة",
+    "brand": "الماركة",
+    "created_at": "تاريخ الإنشاء",
+    "products": "المنتجات",
+    "stock": "المخزون",
+    "status": "الحالة",
+    "list": "القائمة",
+    "new_brand": "ماركة جديدة",
+    "delete_confirm": "هل أنت متأكد من رغبتك في حذف {{count}} من العناصر؟",
+    "name_en": "الاسم بالإنجليزية",
+    "name_ar": "الاسم بالعربية",
+    "isRequired": "مطلوب",
+    "upload_logo": "تحميل الشعار",
+    "new_brand_description": "يرجى ملء النموذج أدناه لإنشاء ماركة جديدة."
+  },
+  "common": {
+    "name": "الاسم",
+    "status": "الحالة",
+    "clear": "إزالة",
+    "create": "إنشاء",
+    "please_enter": "الرجاء إدخال {{field}}"
+  },
+  "datagrid": {
+    "columns": "الأعمدة",
+    "filters": "التصفية",
+    "density": "الكثافة",
+    "export": "تصدير",
+    "csv": "تحميل كـ CSV",
+    "print": "طباعة",
+    "noRows": "لا توجد بيانات",
+    "noResults": "لم يتم العثور على نتائج",
+    "showAll": "إظهار الكل",
+    "hideAll": "إخفاء الكل",
+    "reset": "إعادة تعيين",
+    "showing_results": "عرض {{count}} من إجمالي {{total}}",
+    "results_found": "تم العثور على {{count}} نتائج",
+    "delete_count": "حذف ({{count}})"
+  },
+  "upload": {
+    "drop_or_select": "قم بإسقاط أو تحديد ملف",
+    "drop_description": "قم بإسقاط الملفات هنا أو انقر فوق تصفح عبر جهازك.",
+    "browse": "تصفح",
+    "remove_all": "إزالة الكل",
+    "upload": "رفع",
+    "update_photo": "تحديث الصورة",
+    "upload_photo": "رفع صورة",
+    "invalid_size": "حجم الملف كبير جداً. الحد الأقصى هو {{size}}"
   }
 }

@@ -25,7 +25,7 @@ export default function InsightsView() {
   );
 
   return (
-    <Container sx={{ my: 10 }}>
+    <Container maxWidth="xl" sx={{ my: 10 }}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
           <EcommerceWidgetSummary
@@ -72,7 +72,7 @@ export default function InsightsView() {
               series: [
                 { label: t('insights.mens'), value: 25 },
                 { label: t('insights.womens'), value: 50 },
-                { label: t('insights.kids'), value: 75 },
+                { label: t('insights.neutral'), value: 75 },
               ],
             }}
           />
@@ -88,15 +88,6 @@ export default function InsightsView() {
             chart={{
               categories: monthsLabels,
               series: [
-                {
-                  name: '2022',
-                  data: [
-                    {
-                      name: 'Sales',
-                      data: [10, 41, 35, 51, 49, 62, 69, 91, 148, 35, 51, 49],
-                    },
-                  ],
-                },
                 {
                   name: '2023',
                   data: [

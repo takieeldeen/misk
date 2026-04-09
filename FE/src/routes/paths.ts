@@ -45,10 +45,18 @@ export const paths = {
     root: ROOTS.DASHBOARD,
     two: `${ROOTS.DASHBOARD}/two`,
     three: `${ROOTS.DASHBOARD}/three`,
+    brands: `${ROOTS.DASHBOARD}/brands`,
     group: {
       root: `${ROOTS.DASHBOARD}/group`,
       five: `${ROOTS.DASHBOARD}/group/five`,
       six: `${ROOTS.DASHBOARD}/group/six`,
+    },
+    product: {
+      root: `${ROOTS.DASHBOARD}/product`,
+      list: `${ROOTS.DASHBOARD}/product`,
+      new: `${ROOTS.DASHBOARD}/product/new`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/product/${id}/edit`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/product/${id}`,
     },
   },
 };

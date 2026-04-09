@@ -33,7 +33,6 @@ export function EcommerceYearlySales({ title, subheader, chart, ...other }: Prop
   const theme = useTheme();
   const { direction } = useSettingsContext();
   const [selectedSeries, setSelectedSeries] = useState('2023');
-
   const chartColors = chart.colors ?? [theme.palette.primary.main, theme.palette.warning.main];
 
   const chartOptions = useChart({
@@ -45,38 +44,31 @@ export function EcommerceYearlySales({ title, subheader, chart, ...other }: Prop
     ...chart.options,
   });
 
+  const isRtl = direction === 'rtl';
+  const localizedCategories = isRtl ? [...(chart.categories ?? [])]?.reverse() : chart.categories;
+  const localizedSeries = chart?.series?.map((serie) => ({
+    ...serie,
+    data: isRtl
+      ? serie.data.map((item) => ({ ...item, data: [...(item.data ?? [])]?.reverse() }))
+      : serie.data,
+  }));
   const handleChangeSeries = useCallback((newValue: string) => {
     setSelectedSeries(newValue);
   }, []);
 
-  const currentSeries = chart.series.find((i) => i.name === selectedSeries);
+  const currentSeries = localizedSeries.find((i) => i.name === selectedSeries);
 
   return (
     <Card {...other}>
-      <CardHeader
-        title={title}
-        subheader={subheader}
-        // action={
-        //   <ChartSelect
-        //     options={chart.series.map((item) => item.name)}
-        //     value={selectedSeries}
-        //     onChange={handleChangeSeries}
-        //   />
-        // }
-        sx={{ mb: 3 }}
-      />
-
-      {/* <ChartLegends
-        colors={chartOptions?.colors}
-        labels={chart.series[0].data.map((item) => item.name)}
-        values={[fShortenNumber(1234), fShortenNumber(6789)]}
-        sx={{ px: 3, gap: 3 }}
-      /> */}
+      <CardHeader title={title} subheader={subheader} sx={{ mb: 3 }} />
 
       <Chart
         type="area"
         series={currentSeries?.data}
-        options={chartOptions}
+        options={{
+          ...chartOptions,
+          xaxis: { ...(chartOptions?.xaxis ?? {}), categories: localizedCategories },
+        }}
         height={320}
         loadingProps={{ sx: { p: 2.5 } }}
         sx={{ py: 2.5, pl: 1, pr: 2.5 }}

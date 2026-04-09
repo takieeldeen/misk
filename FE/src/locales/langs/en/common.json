@@ -19,7 +19,7 @@
     "stock_in": "In Stock",
     "mens": "Mens",
     "womens": "Womens",
-    "kids": "Kids",
+    "neutral": "Neutral",
     "total": "Total",
     "last_week": "Last Week"
   },
@@ -32,6 +32,57 @@
     "group": "Group",
     "four": "Four",
     "five": "Five",
-    "six": "Six"
+    "six": "Six",
+    "brands": "Brands"
+  },
+  "brands": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "category": "Category",
+    "brand": "Brand",
+    "created_at": "Created At",
+    "products": "Products",
+    "stock": "Stock",
+    "status": "Status",
+    "list": "List",
+    "new_brand": "New Brand",
+    "delete_confirm": "Are you sure want to delete {{count}} items?",
+    "name_en": "English Name",
+    "name_ar": "Arabic Name",
+    "isRequired": "is required",
+    "upload_logo": "Upload Logo",
+    "new_brand_description": "Please fill in the form below to create a new brand."
+  },
+  "common": {
+    "name": "Name",
+    "status": "Status",
+    "clear": "Clear",
+    "create": "Create",
+    "please_enter": "Please enter {{field}}"
+  },
+  "datagrid": {
+    "columns": "Columns",
+    "filters": "Filters",
+    "density": "Density",
+    "export": "Export",
+    "csv": "Download as CSV",
+    "print": "Print",
+    "noRows": "No rows",
+    "noResults": "No results found",
+    "showAll": "Show all",
+    "hideAll": "Hide all",
+    "reset": "Reset",
+    "showing_results": "Showing {{count}} results out of {{total}}",
+    "results_found": "{{count}} results found",
+    "delete_count": "Delete ({{count}})"
+  },
+  "upload": {
+    "drop_or_select": "Drop or select file",
+    "drop_description": "Drop files here or click to browse through your machine.",
+    "remove_all": "Remove all",
+    "upload": "Upload",
+    "update_photo": "Update photo",
+    "upload_photo": "Upload photo",
+    "invalid_size": "File is too large. Max size is {{size}}"
   }
 }

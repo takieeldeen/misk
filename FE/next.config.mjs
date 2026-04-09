@@ -5,6 +5,14 @@
 const isStaticExport = 'false';
 
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'jbrjjqmiuuigrsyxefzf.supabase.co',
+      },
+    ],
+  },
   trailingSlash: true,
   env: {
     BUILD_STATIC_EXPORT: isStaticExport,
@@ -31,6 +39,14 @@ const nextConfig = {
   ...(isStaticExport === 'true' && {
     output: 'export',
   }),
+  async rewrites() {
+    return [
+      {
+        source: '/api/v1/:path*',
+        destination: 'http://localhost:8080/api/v1/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

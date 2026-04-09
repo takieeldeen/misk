@@ -1,6 +1,8 @@
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { fallbackLng, languages, cookieName } from './locales/config-locales';
+
+import { NextResponse } from 'next/server';
+
+import { languages, cookieName, fallbackLng } from './locales/config-locales';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

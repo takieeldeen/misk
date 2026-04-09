@@ -31,13 +31,16 @@ type Props = CardProps & {
 
 export function EcommerceWidgetSummary({ title, percent, total, chart, sx, ...other }: Props) {
   const theme = useTheme();
-  const { t } = useTranslate();
+  const { t, i18n } = useTranslate();
   const chartColors = chart.colors ?? [theme.palette.primary.light, theme.palette.primary.main];
-
+  const localizedCategories =
+    i18n.language === 'ar' ? [...(chart?.categories ?? [])].reverse() : chart.categories;
+  const localizedSeries =
+    i18n.language === 'ar' ? [...(chart?.series ?? [])].reverse() : chart.series;
   const chartOptions = useChart({
     chart: { sparkline: { enabled: true } },
     colors: [chartColors[1]],
-    xaxis: { categories: chart.categories },
+    xaxis: { categories: localizedCategories },
     grid: {
       padding: {
         top: 6,
@@ -118,7 +121,7 @@ export function EcommerceWidgetSummary({ title, percent, total, chart, sx, ...ot
 
       <Chart
         type="line"
-        series={[{ data: chart.series }]}
+        series={[{ data: localizedSeries }]}
         options={chartOptions}
         width={100}
         height={66}

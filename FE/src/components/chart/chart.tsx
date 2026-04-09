@@ -8,6 +8,8 @@ import Box from '@mui/material/Box';
 
 import { withLoadingProps } from 'src/utils/with-loading-props';
 
+import { useTranslate } from 'src/locales';
+
 import { chartClasses } from './classes';
 
 import type { ChartProps, ChartBaseProps, ChartLoadingProps } from './types';
@@ -54,9 +56,10 @@ export function Chart({
   width = '100%',
   ...other
 }: BoxProps & ChartProps) {
+  const { i18n } = useTranslate();
+
   return (
     <Box
-      dir="ltr"
       className={chartClasses.root.concat(className ? ` ${className}` : '')}
       sx={{
         width,
@@ -71,7 +74,7 @@ export function Chart({
       <ApexChart
         type={type}
         series={series}
-        options={options}
+        options={{ ...options }}
         width="100%"
         height="100%"
         loading={loadingProps}

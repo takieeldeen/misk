@@ -29,7 +29,6 @@ export function NavSectionVertical({
     ...navSectionCssVars.vertical(theme),
     ...overridesVars,
   };
-  console.log(data);
   return (
     <Stack component="nav" className={navSectionClasses.vertical.root} sx={{ ...cssVars, ...sx }}>
       <NavUl sx={{ flex: '1 1 auto', gap: 'var(--nav-item-gap)' }}>

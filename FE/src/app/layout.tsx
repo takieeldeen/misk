@@ -11,11 +11,15 @@ import '@fontsource/cairo/index.css';
 
 import type { Viewport } from 'next';
 
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
+
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 
 import { CONFIG } from 'src/config-global';
 import { primary } from 'src/theme/core/palette';
 import { schemeConfig } from 'src/theme/scheme-config';
+
+import TanstackProvider from 'src/components/providers/tanstack-provider';
 
 // ----------------------------------------------------------------------
 
@@ -42,11 +46,15 @@ export default function RootLayout({ children }: Props) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <InitColorSchemeScript
-          defaultMode={schemeConfig.defaultMode}
-          modeStorageKey={schemeConfig.modeStorageKey}
-        />
-        {children}
+        <TanstackProvider>
+          <NuqsAdapter>
+            <InitColorSchemeScript
+              defaultMode={schemeConfig.defaultMode}
+              modeStorageKey={schemeConfig.modeStorageKey}
+            />
+            {children}
+          </NuqsAdapter>
+        </TanstackProvider>
       </body>
     </html>
   );

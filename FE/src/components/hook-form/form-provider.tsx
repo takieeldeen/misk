@@ -8,12 +8,13 @@ export type FormProps = {
   onSubmit?: () => void;
   children: React.ReactNode;
   methods: UseFormReturn<any>;
+  formProps?: React.ComponentProps<'form'>;
 };
 
-export function Form({ children, onSubmit, methods }: FormProps) {
+export function Form({ children, onSubmit, methods, formProps }: FormProps) {
   return (
     <RHFForm {...methods}>
-      <form onSubmit={onSubmit} noValidate autoComplete="off">
+      <form {...formProps} onSubmit={onSubmit} noValidate autoComplete="off">
         {children}
       </form>
     </RHFForm>

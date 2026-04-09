@@ -1,16 +1,29 @@
 import type { AxiosRequestConfig } from 'axios';
 
 import axios from 'axios';
-
-import { CONFIG } from 'src/config-global';
+ 
+ import { CONFIG } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
 const axiosInstance = axios.create({ baseURL: CONFIG.serverUrl });
+// const axiosInstance = axios.create();
+
+axiosInstance.interceptors.request.use((config) => {
+  // const token = localStorage.getItem('accessToken');
+  // if (token) {
+  //   config.headers.Authorization = `Bearer ${token}`;
+  // }
+  console.log(config);
+  return config;
+});
 
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong!')
+  (error) => {
+    console.log(error, error.response);
+    return Promise.reject((error.response && error.response.data) || 'Something went wrong!');
+  }
 );
 
 export default axiosInstance;
@@ -37,9 +50,9 @@ export const endpoints = {
   kanban: '/api/kanban',
   calendar: '/api/calendar',
   auth: {
-    me: '/api/auth/me',
-    signIn: '/api/auth/sign-in',
-    signUp: '/api/auth/sign-up',
+    me: 'https://api-dev-minimal-v610.pages.dev/api/auth/me',
+    signIn: 'https://api-dev-minimal-v610.pages.dev/api/auth/sign-in',
+    signUp: 'https://api-dev-minimal-v610.pages.dev/api/auth/sign-up',
   },
   mail: {
     list: '/api/mail/list',
@@ -56,5 +69,10 @@ export const endpoints = {
     list: '/api/product/list',
     details: '/api/product/details',
     search: '/api/product/search',
+  },
+  brand: {
+    list: '/brands',
+    details: '/brand/details',
+    search: '/brand/search',
   },
 };

@@ -58,6 +58,7 @@ export function useNavData() {
           { title: t('navbar.insights'), path: paths.dashboard.root, icon: ICONS.dashboard },
           { title: t('navbar.two'), path: paths.dashboard.two, icon: ICONS.ecommerce },
           { title: t('navbar.three'), path: paths.dashboard.three, icon: ICONS.analytics },
+          { title: t('navbar.brands'), path: paths.dashboard.brands, icon: ICONS.ecommerce },
         ],
       },
       /**
