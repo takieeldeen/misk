@@ -50,9 +50,15 @@ export const endpoints = {
   kanban: '/api/kanban',
   calendar: '/api/calendar',
   auth: {
+<<<<<<< HEAD
     me: 'https://api-dev-minimal-v610.pages.dev/api/auth/me',
     signIn: 'https://api-dev-minimal-v610.pages.dev/api/auth/sign-in',
     signUp: 'https://api-dev-minimal-v610.pages.dev/api/auth/sign-up',
+=======
+    me: '/api/auth/me',
+    signIn: '/auth/login',
+    signUp: '/api/auth/sign-up',
+>>>>>>> 2f820c9bb4895ab14c40fc1c40f997b586e562bc
   },
   mail: {
     list: '/api/mail/list',

@@ -9,6 +9,7 @@ import { isExternalLink } from 'src/routes/utils';
 import { useActiveLink } from 'src/routes/hooks/use-active-link';
 
 import { paper } from 'src/theme/styles';
+import { useTranslate } from 'src/locales';
 
 import { NavItem } from './nav-item';
 import { NavUl, NavLi } from '../styles';
@@ -29,10 +30,11 @@ export function NavList({
   const theme = useTheme();
 
   const pathname = usePathname();
+  const { i18n } = useTranslate();
 
   const navItemRef = useRef<HTMLButtonElement | null>(null);
 
-  const active = useActiveLink(data.path, !!data.children);
+  const active = useActiveLink(data.path, !!data.children, i18n.language);
 
   const [openMenu, setOpenMenu] = useState(false);
 
