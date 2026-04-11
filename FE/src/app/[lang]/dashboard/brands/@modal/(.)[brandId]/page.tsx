@@ -1,14 +1,14 @@
 import React from 'react';
 
-import { Drawer } from '@mui/material';
+import DetailsDrawer from 'src/components/details-drawer/details-drawer';
 
 import BrandDetailsView from 'src/sections/brands/views/details-view';
 
 function BrandModalPage() {
   return (
-    <Drawer open>
+    <DetailsDrawer backLink="/dashboard/brands" open>
       <BrandDetailsView />
-    </Drawer>
+    </DetailsDrawer>
   );
 }
 
