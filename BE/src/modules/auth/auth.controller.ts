@@ -1,5 +1,6 @@
 import { RequestHandler, Request, Response, NextFunction } from "express";
 
+import jwt from "jsonwebtoken";
 import {
   createUserInfoDto,
   createUserLoginDto,
@@ -60,16 +61,66 @@ export const activateAccount = catchAsync(
       status: "success",
       content: createUserInfoDto(user),
     });
-  }
+  },
 );
 
 export const getMeHandler: RequestHandler = catchAsync(async (req, res) => {
-  const user = (req as any).user;
+  try {
+    let token: string | undefined;
+    if (req.headers.cookie) {
+      const cookies = req.headers.cookie.split(";");
+      const tokenCookie = cookies.find((c) => c.trim().startsWith("token="));
+      if (tokenCookie) {
+        token = tokenCookie.trim().split("=")[1];
+      }
+    }
+    if (!token) {
+      res.status(200).json({
+        status: "success",
+        content: null,
+      });
+      return;
+    }
+    const decoded = jwt.verify(token!, process.env.JWT_SECRET!) as any;
 
-  res.status(200).json({
-    status: "success",
-    content: createUserInfoDto(user),
-  });
+    // 4) Check if user still exists
+    const user = await UserModel.findById(decoded.id).select("+isAdmin");
+    if (!user) {
+      res.status(200).json({
+        status: "success",
+        content: null,
+      });
+      return;
+    }
+    if (user.passwordChangedAt) {
+      const changedTimestamp = Math.floor(
+        user.passwordChangedAt.getTime() / 1000,
+      );
+
+      if (decoded.iat < changedTimestamp) {
+        res.cookie("token", "loggedout", {
+          expires: new Date(Date.now() + 10 * 1000),
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        });
+        res.status(200).json({
+          status: "success",
+          content: null,
+        });
+        return;
+      }
+    }
+    res.status(200).json({
+      status: "success",
+      content: createUserInfoDto(user),
+    });
+  } catch (error) {
+    res.status(200).json({
+      status: "success",
+      content: null,
+    });
+  }
 });
 
 export const forgetPasswordHandler = catchAsync(async (req, res, next) => {
@@ -149,7 +200,7 @@ export const updateMeHandler = catchAsync(async (req, res, next) => {
       `${req.user!._id}.${(req.file as any).originalname.split(".").pop()}`,
 
       "MISK_BUCKET",
-      "profile_pics/"
+      "profile_pics/",
     );
     if (error) throw new AppError(500, "IMAGE_UPLOAD_FAILED");
     updateData.imageUrl = publicUrl;

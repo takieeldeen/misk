@@ -73,10 +73,12 @@ export const StyledToaster = styled(Toaster)(({ theme }) => {
     },
     [`& .${toasterClasses.title}`]: {
       fontSize: theme.typography.subtitle2.fontSize,
+      fontFamily: theme.direction === 'rtl' ? 'Cairo' : 'inherit',
     },
     [`& .${toasterClasses.description}`]: {
       ...theme.typography.caption,
       opacity: 0.64,
+      fontFamily: theme.direction === 'rtl' ? 'Cairo' : 'inherit',
     },
     /*
      * Buttons
@@ -84,17 +86,28 @@ export const StyledToaster = styled(Toaster)(({ theme }) => {
     [`& .${toasterClasses.actionButton}`]: {},
     [`& .${toasterClasses.cancelButton}`]: {},
     [`& .${toasterClasses.closeButton}`]: {
-      top: 0,
+      position: 'absolute',
+      top: '50%',
+      transform: 'translate(-50%, -50%)',
+      height: 36,
+      width: 36,
+      borderRadius: '12px',
       right: 0,
       left: 'auto',
+      // display: 'none',
       color: 'currentColor',
       backgroundColor: 'transparent',
-      transform: 'translate(-6px, 6px)',
-      borderColor: varAlpha(theme.vars.palette.grey['500Channel'], 0.16),
+      // transform: 'translate(-6px, 6px)',
+      // borderColor: varAlpha(theme.vars.palette.grey['500Channel'], 0.16),
+      border: 'none',
       transition: theme.transitions.create(['background-color', 'border-color']),
       '&:hover': {
         borderColor: varAlpha(theme.vars.palette.grey['500Channel'], 0.24),
         backgroundColor: varAlpha(theme.vars.palette.grey['500Channel'], 0.08),
+      },
+      svg: {
+        height: 18,
+        width: 18,
       },
     },
     /*
@@ -104,10 +117,11 @@ export const StyledToaster = styled(Toaster)(({ theme }) => {
       margin: 0,
       width: 48,
       height: 48,
+      display: 'flex',
       alignItems: 'center',
       borderRadius: 'inherit',
       justifyContent: 'center',
-      alignSelf: 'flex-start',
+      alignSelf: 'center',
       [`& .${toasterClasses.iconSvg}`]: {
         width: 24,
         height: 24,

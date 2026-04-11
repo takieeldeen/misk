@@ -14,6 +14,9 @@ export const brandParams = {
   pageSize: parseAsInteger.withDefault(PAGINATION.DEFAULT_PAGE_SIZE).withOptions({
     clearOnDefault: true,
   }),
+  sort: parseAsString.withDefault('').withOptions({
+    clearOnDefault: true,
+  }),
 };
 
 export const loadSearchParams = createLoader(brandParams);

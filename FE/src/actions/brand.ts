@@ -20,12 +20,14 @@ export async function prefetchBrands({
   pageSize = PAGINATION.DEFAULT_PAGE_SIZE,
   name = '',
   status = [],
+  sort = '',
   filters = {},
 }: {
   page: number;
   pageSize: number;
   name: string;
   status: string[];
+  sort?: string;
   filters?: Record<string, string | number>;
 }) {
   const URL: [string, AxiosRequestConfig] = [
@@ -36,6 +38,7 @@ export async function prefetchBrands({
         size: pageSize,
         name,
         status: status.join(','),
+        sort,
         ...filters,
       },
     },
@@ -54,12 +57,14 @@ export function useGetBrands({
   pageSize = PAGINATION.DEFAULT_PAGE_SIZE,
   name = '',
   status = [],
+  sort = '',
   filters = {},
 }: {
   page: number;
   pageSize: number;
   name?: string;
   status?: string[];
+  sort?: string;
   filters?: Record<string, string | number>;
 }) {
   const URL: [string, AxiosRequestConfig] = [
@@ -70,6 +75,7 @@ export function useGetBrands({
         size: pageSize,
         name,
         status: status.join(','),
+        sort,
         ...filters,
       },
     },
@@ -81,6 +87,17 @@ export function useGetBrands({
     staleTime: 60 * 1000,
     refetchOnMount: false,
     refetchOnReconnect: false,
+  });
+  return { ...query, queryKey };
+}
+
+export function useGetBrand(id: string) {
+  const URL: [string, AxiosRequestConfig] = [endpoints.brand.details(id), {}];
+  const queryKey = ['brand', 'details', id];
+  const query = useQuery<IBrandItem>({
+    queryKey,
+    queryFn: getFetcher(URL),
+    enabled: !!id,
   });
   return { ...query, queryKey };
 }
@@ -98,6 +115,60 @@ export function useCreateBrand() {
         formData.append('imageUrl', data.imageUrl);
       }
       const res = await axios.post(endpoints.brand.list, formData);
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['brand', 'list'] });
+    },
+  });
+}
+
+export function useDeleteBrand() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await axios.delete(`${endpoints.brand.list}/${id}`);
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['brand', 'list'] });
+    },
+  });
+}
+export function useDeleteManyBrands() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const res = await axios.post(endpoints.brand.deleteMany, { ids });
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['brand', 'list'] });
+    },
+  });
+}
+export function useActivateBrand() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await axios.patch(endpoints.brand.activate(id));
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['brand', 'list'] });
+    },
+  });
+}
+
+export function useDeactivateBrand() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await axios.patch(endpoints.brand.deactivate(id));
       return res;
     },
     onSuccess: () => {

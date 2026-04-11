@@ -25,11 +25,7 @@ export default function InsightsView() {
   );
 
   return (
-<<<<<<< HEAD
     <Container maxWidth="xl" sx={{ my: 10 }}>
-=======
-    <Container sx={{ my: 10, minWidth: '100%' }}>
->>>>>>> 2f820c9bb4895ab14c40fc1c40f997b586e562bc
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
           <EcommerceWidgetSummary

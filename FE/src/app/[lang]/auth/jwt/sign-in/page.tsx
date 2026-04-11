@@ -1,4 +1,4 @@
-import { JwtSignInView } from 'src/auth/view/jwt';
+import { SignInView } from 'src/auth/view/jwt';
 
 // ----------------------------------------------------------------------
 
@@ -9,5 +9,5 @@ export function generateMetadata({ params }: { params: { lang: string } }) {
 }
 
 export default function Page() {
-  return <JwtSignInView />;
+  return <SignInView />;
 }

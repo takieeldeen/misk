@@ -42,6 +42,7 @@ export function GuestGuard({ children }: Props) {
 
   useEffect(() => {
     checkPermissions();
+    console.log(authenticated);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated, loading]);
 

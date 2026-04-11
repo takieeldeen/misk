@@ -6,7 +6,7 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { prefetchBrands } from 'src/actions/brand';
 
 import { loadSearchParams } from 'src/sections/brands/params';
-import { ProductListView } from 'src/sections/brands/views/list-view';
+import { BrandListView } from 'src/sections/brands/views/list-view';
 
 export const metadata: Metadata = {
   title: 'Brands List | Dashboard',
@@ -20,7 +20,7 @@ async function BrandsPage({ searchParams }: { searchParams: Record<string, strin
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense fallback={<div>Loading...</div>}>
-        <ProductListView />
+        <BrandListView />
       </Suspense>
     </HydrationBoundary>
   );

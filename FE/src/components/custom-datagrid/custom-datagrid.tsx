@@ -2,9 +2,9 @@
 
 import type { DataGridProps } from '@mui/x-data-grid';
 
-import { DataGrid } from '@mui/x-data-grid';
-
 import { useMemo } from 'react';
+
+import { DataGrid } from '@mui/x-data-grid';
 
 import { useTranslate } from 'src/locales';
 
@@ -25,10 +25,18 @@ export function CustomDataGrid({ localeText, ...other }: DataGridProps) {
       noResultsOverlayLabel: t('datagrid.noResults'),
       columnsManagementShowHideAllText: t('datagrid.showAll'),
       columnsManagementReset: t('datagrid.reset'),
+      columnMenuSortAsc: t('datagrid.sortAscending'),
+      columnMenuSortDesc: t('datagrid.sortDescending'),
+      columnMenuManageColumns: t('datagrid.manageColumns'),
+      columnMenuFilter: t('datagrid.filter'),
+      filterPanelRemoveAll: t('datagrid.removeAllFilters'),
+      filterPanelDeleteIconLabel: t('datagrid.removeFilter'),
+      columnMenuHideColumn: t('datagrid.hideColumn'),
+      columnMenuUnsort: t('datagrid.unsort'),
       ...localeText,
     }),
     [t, localeText]
   );
 
-  return <DataGrid localeText={gridLocaleText} {...other} />;
+  return <DataGrid disableColumnFilter localeText={gridLocaleText} {...other} />;
 }

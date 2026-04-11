@@ -25,7 +25,6 @@ export function AuthGuard({ children }: Props) {
   const searchParams = useSearchParams();
 
   const { authenticated, loading } = useAuthContext();
-
   const [isChecking, setIsChecking] = useState<boolean>(true);
 
   const createQueryString = useCallback(
@@ -42,7 +41,6 @@ export function AuthGuard({ children }: Props) {
     if (loading) {
       return;
     }
-
     if (!authenticated) {
       const { method } = CONFIG.auth;
 

@@ -6,9 +6,7 @@ import { useSetState } from 'src/hooks/use-set-state';
 
 import axios, { endpoints } from 'src/utils/axios';
 
-import { STORAGE_KEY } from './constant';
 import { AuthContext } from '../auth-context';
-import { setSession, isValidToken } from './utils';
 
 import type { AuthState } from '../../types';
 
@@ -30,32 +28,42 @@ export function AuthProvider({ children }: Props) {
     loading: true,
   });
 
+  // const checkUserSession = useCallback(async () => {
+  //   try {
+  //     const accessToken = sessionStorage.getItem(STORAGE_KEY);
+
+  //     if (accessToken && isValidToken(accessToken)) {
+  //       setSession(accessToken);
+
+  //       const res = await axios.get(endpoints.auth.me);
+
+  //       const { user } = res.data;
+
+  //       setState({ user: { ...user, accessToken }, loading: false });
+  //     } else {
+  //       setState({ user: null, loading: false });
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     setState({ user: null, loading: false });
+  //   }
+  // }, [setState]);
   const checkUserSession = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(STORAGE_KEY);
-
-      if (accessToken && isValidToken(accessToken)) {
-        setSession(accessToken);
-
-        const res = await axios.get(endpoints.auth.me);
-
-        const { user } = res.data;
-
-        setState({ user: { ...user, accessToken }, loading: false });
-      } else {
-        setState({ user: null, loading: false });
-      }
-    } catch (error) {
-      console.error(error);
-      setState({ user: null, loading: false });
+      setState({ loading: true, user: null });
+      const res = await axios.get(endpoints.auth.me);
+      const user = res.data.content;
+      setState({ loading: false, user });
+    } catch (err) {
+      console.log(err);
+      setState({ loading: false, user: null });
     }
   }, [setState]);
-
   useEffect(() => {
     checkUserSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  console.log(state.user, 'USER STATE');
   // ----------------------------------------------------------------------
 
   const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated';

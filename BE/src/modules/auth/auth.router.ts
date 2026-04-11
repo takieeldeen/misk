@@ -20,7 +20,7 @@ authRouter.post("/register", registerHandler);
 authRouter.post("/login", loginHandler);
 authRouter.post("/logout", logoutHandler);
 authRouter.post("/activate", activateAccount);
-authRouter.get("/me", requireAuth, getMeHandler);
+authRouter.get("/me", getMeHandler);
 authRouter.patch("/update-me", requireAuth, uploadUserPhoto, updateMeHandler);
 authRouter.post("/forgot-password", forgetPasswordHandler);
 authRouter.post("/reset-password", resetPasswordHandler);

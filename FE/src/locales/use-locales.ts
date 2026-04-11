@@ -21,7 +21,7 @@ export function useTranslate(ns?: string) {
   const pathname = usePathname();
   const { lang: resolvedLanguage } = useParams();
   const { t, i18n } = useTranslation(ns);
-
+  console.log('I18n', i18n, resolvedLanguage);
   const fallback = allLangs.filter((lang) => lang.value === fallbackLng)[0];
   const currentLang = allLangs.find((lang) => lang.value === resolvedLanguage);
   const onChangeLang = useCallback(

@@ -2,7 +2,7 @@
 
 import axios, { endpoints } from 'src/utils/axios';
 
-import { setSession } from './utils';
+import { setUser } from './utils';
 import { STORAGE_KEY } from './constant';
 
 // ----------------------------------------------------------------------
@@ -30,13 +30,13 @@ export const signInWithPassword = async ({ email, password }: SignInParams): Pro
       withCredentials: true,
     });
 
-    const { accessToken } = res.data;
-
-    if (!accessToken) {
-      throw new Error('Access token not found in response');
+    // const { accessToken } = res.data;
+    const user = res?.data?.content;
+    if (!user._id) {
+      throw new Error('User not found in response');
     }
-
-    setSession(accessToken);
+    setUser(user);
+    // setSession(accessToken);
   } catch (error) {
     console.error('Error during sign in:', error);
     throw error;
@@ -80,7 +80,10 @@ export const signUp = async ({
  *************************************** */
 export const signOut = async (): Promise<void> => {
   try {
-    await setSession(null);
+    await axios.post(endpoints.auth.signOut, {
+      withCredentials: true,
+    });
+    localStorage.removeItem(STORAGE_KEY);
   } catch (error) {
     console.error('Error during sign out:', error);
     throw error;

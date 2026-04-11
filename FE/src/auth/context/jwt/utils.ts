@@ -92,3 +92,16 @@ export async function setSession(accessToken: string | null) {
     throw error;
   }
 }
+
+export async function setUser(user: any) {
+  try {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  } catch (err) {
+    console.error('Error during set user:', err);
+    throw err;
+  }
+}

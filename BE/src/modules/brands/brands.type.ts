@@ -6,6 +6,8 @@ export interface BrandType {
   status: "ACTIVE" | "INACTIVE";
   createdAt: Date;
   updatedAt: Date;
+  products?: number;
+  stock?: number;
 }
 
 export interface BrandCreationDto {
@@ -20,4 +22,6 @@ export interface BrandInfoDto {
   nameEn: string;
   status: "ACTIVE" | "INACTIVE";
   imageUrl: string;
+  products?: number;
+  stock?: number;
 }

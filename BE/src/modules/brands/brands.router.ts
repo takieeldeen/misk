@@ -4,6 +4,7 @@ import {
   brandCreationHandler,
   deactivateBrandHandler,
   deleteBrandHandler,
+  deleteManyBrandsHandler,
   getBrandsValueHelp,
   getOneBrandHandler,
   getPaginatedBrandsHandler,
@@ -19,6 +20,8 @@ BrandsRouter.route("/value-help").get(getBrandsValueHelp);
 BrandsRouter.route("/")
   .post(requireAuth, uploadUserPhoto, brandCreationHandler)
   .get(getPaginatedBrandsHandler);
+
+BrandsRouter.route("/delete-many").post(requireAuth, deleteManyBrandsHandler);
 
 BrandsRouter.route("/:brandId")
   .get(getOneBrandHandler)

@@ -35,10 +35,15 @@ export const getOneBrandHandler = catchAsync(async (req, res, next) => {
 
 export const getPaginatedBrandsHandler = catchAsync(async (req, res, next) => {
   const { page = 1, limit = 9, ...filters } = req.query;
+  const locale = (req?.headers?.cookie
+    ?.split(";")
+    .find((cookie) => cookie.trim().startsWith("i18next="))
+    ?.split("=")[1] || "en") as "ar" | "en";
   const brands = await BrandsServices.getPaginatedBrands(
     Number(page),
     Number(limit),
     filters as Record<string, string>,
+    locale,
   );
   const brandsCount = await BrandsServices.getBrandsCount(
     filters as Record<string, string>,
@@ -49,6 +54,11 @@ export const getPaginatedBrandsHandler = catchAsync(async (req, res, next) => {
     page: Number(page),
     limit: Number(limit),
     total: brandsCount,
+    totalPages: Math.ceil(brandsCount / Number(limit)),
+    hasNextPage: Number(page) < Math.ceil(brandsCount / Number(limit)),
+    hasPrevPage: Number(page) > 1,
+    isEmpty: brands.length === 0,
+    canReset: Number(page) > 1 || Object.keys(filters).length > 0,
   });
 });
 
@@ -82,6 +92,21 @@ export const deleteBrandHandler = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     content: deletedBrand,
+  });
+});
+
+export const deleteManyBrandsHandler = catchAsync(async (req, res, next) => {
+  const { ids } = req.body;
+
+  if (!ids || !Array.isArray(ids)) {
+    throw new AppError(400, "IDS_ARRAY_REQUIRED");
+  }
+
+  await BrandsServices.deleteManyBrands(ids);
+
+  res.status(200).json({
+    status: "success",
+    message: "Brands deleted successfully",
   });
 });
 

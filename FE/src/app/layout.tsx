@@ -19,6 +19,7 @@ import { CONFIG } from 'src/config-global';
 import { primary } from 'src/theme/core/palette';
 import { schemeConfig } from 'src/theme/scheme-config';
 
+import { Snackbar } from 'src/components/snackbar';
 import TanstackProvider from 'src/components/providers/tanstack-provider';
 
 // ----------------------------------------------------------------------

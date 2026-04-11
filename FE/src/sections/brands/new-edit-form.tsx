@@ -14,6 +14,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { useTranslate } from 'src/locales';
 import { useCreateBrand } from 'src/actions/brand';
 
+import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Form, RHFTextField } from 'src/components/hook-form';
 import { RHFUpload } from 'src/components/hook-form/rhf-upload';
@@ -65,8 +66,10 @@ export default function NewEditForm() {
       await createBrand.mutateAsync(data);
       openForm.onFalse();
       methods.reset();
+      toast.success(t('brands.create_success'));
     } catch (error) {
       console.error(error);
+      toast.error(t('brands.create_error'));
     }
   });
 
@@ -85,7 +88,7 @@ export default function NewEditForm() {
         open={openForm.value}
         onClose={openForm.onFalse}
         anchor="left"
-        slotProps={{ backdrop: { invisible: true } }}
+        slotProps={{ backdrop: { invisible: false, sx: { backdropFilter: 'blur(4px)' } } }}
         PaperProps={{ sx: { width: mdUp ? 440 : 1 } }}
       >
         <Stack
@@ -127,7 +130,7 @@ export default function NewEditForm() {
           <Stack spacing={2} sx={{ py: 3, px: 1, flex: 1, overflowY: 'auto' }}>
             <Stack spacing={1}>
               <Typography sx={{ fontSize: 16, fontWeight: 600 }}>{t('brands.name_ar')}</Typography>
-              <RHFTextField name="nameAr" placeholder={t('brands.name_ar')} />
+              <RHFTextField autoFocus name="nameAr" placeholder={t('brands.name_ar')} />
             </Stack>
             <Stack spacing={1}>
               <Typography sx={{ fontSize: 16, fontWeight: 600 }}>{t('brands.name_en')}</Typography>

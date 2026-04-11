@@ -48,11 +48,10 @@ type Props = {
 
 export function I18nProvider({ lang, children }: Props) {
   useMemo(() => {
-    if (lang) {
+    if (lang && i18next.resolvedLanguage !== lang) {
       i18next.changeLanguage(lang);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [lang]);
 
   return <Provider i18n={i18next}>{children}</Provider>;
 }

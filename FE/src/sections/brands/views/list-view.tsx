@@ -9,11 +9,12 @@ import type {
   GridColumnVisibilityModel,
 } from '@mui/x-data-grid';
 
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import { alpha } from '@mui/material/styles';
 import { Pagination, Typography } from '@mui/material';
 import {
   gridClasses,
@@ -31,14 +32,20 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useTranslate } from 'src/locales';
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetBrands, useBrandsParams } from 'src/actions/brand';
+import {
+  useGetBrands,
+  useDeleteBrand,
+  useBrandsParams,
+  useActivateBrand,
+  useDeactivateBrand,
+  useDeleteManyBrands,
+} from 'src/actions/brand';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomDataGrid } from 'src/components/custom-datagrid';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import NewEditForm from '../new-edit-form';
 import { ProductTableToolbar } from '../table-toolbar';
@@ -64,25 +71,25 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-export function ProductListView() {
-  const { t } = useTranslate();
+export function BrandListView() {
+  const { t, currentLang } = useTranslate();
 
   const confirmRows = useBoolean();
+  const confirmDeleteRow = useBoolean();
+  const confirmToggleStatus = useBoolean();
 
   const router = useRouter();
 
   const [params, setParams] = useBrandsParams();
-  const { data, isFetching } = useGetBrands({
+  const { data, isFetching: brandsLoading } = useGetBrands({
     page: params.page,
     pageSize: params.pageSize,
     name: params.name,
     status: params.status,
+    sort: params.sort,
   });
 
   const brands: IBrandItem[] = useMemo(() => data?.content || [], [data]);
-
-  const productsLoading = isFetching;
-
   const filters = useMemo(
     () => ({
       state: {
@@ -106,52 +113,80 @@ export function ProductListView() {
     }),
     [params, setParams]
   );
-  const [tableData, setTableData] = useState<IBrandItem[]>([]);
+
+  const { mutate: deleteBrand } = useDeleteBrand();
+  const { mutate: deleteManyBrands } = useDeleteManyBrands();
+  const { mutate: activateBrand } = useActivateBrand();
+  const { mutate: deactivateBrand } = useDeactivateBrand();
 
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>([]);
 
   const [filterButtonEl, setFilterButtonEl] = useState<HTMLButtonElement | null>(null);
 
+  const [actionRow, setActionRow] = useState<IBrandItem | null>(null);
+
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
-  useEffect(() => {
-    if (brands.length) {
-      setTableData(brands);
-    }
-  }, [brands]);
-
-  const dataFiltered = brands;
-
   const handleDeleteRow = useCallback(
     (id: string) => {
-      const deleteRow = tableData.filter((row) => row._id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
+      deleteBrand(id, {
+        onSuccess: () => {
+          toast.success(t('brands.delete_success'));
+        },
+        onError: (error) => {
+          console.error(error);
+          toast.error(t('brands.delete_error'));
+        },
+      });
     },
-    [tableData]
+    [deleteBrand, t]
   );
-
+  console.log(brands);
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row._id));
+    const ids = selectedRowIds.map((id) => id.toString());
+    deleteManyBrands(ids, {
+      onSuccess: () => {
+        toast.success(t('brands.delete_many_success'));
+        setSelectedRowIds([]);
+      },
+      onError: (error) => {
+        console.error(error);
+        toast.error(t('brands.delete_many_error'));
+      },
+    });
+  }, [selectedRowIds, deleteManyBrands, t]);
 
-    toast.success('Delete success!');
+  const handleToggleStatus = useCallback(
+    (id: string, currentStatus: string) => {
+      const isCurrentlyActive = currentStatus === 'ACTIVE';
+      const action = isCurrentlyActive ? deactivateBrand : activateBrand;
 
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
+      action(id, {
+        onSuccess: () => {
+          toast.success(
+            isCurrentlyActive ? t('brands.deactivate_success') : t('brands.activate_success')
+          );
+        },
+        onError: (error) => {
+          console.error(error);
+          toast.error(t('brands.status_error'));
+        },
+      });
+    },
+    [activateBrand, deactivateBrand, t]
+  );
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.edit(id));
+      router.push(paths.dashboard.brand.edit(id));
     },
     [router]
   );
 
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.details(id));
+      router.push(paths.dashboard.brand.details(id));
     },
     [router]
   );
@@ -163,14 +198,14 @@ export function ProductListView() {
         canReset={filters.canReset}
         selectedRowIds={selectedRowIds}
         setFilterButtonEl={setFilterButtonEl}
-        filteredResults={dataFiltered.length}
+        filteredResults={brands.length}
         onOpenConfirmDeleteRows={confirmRows.onTrue}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [filters.state, selectedRowIds]
   );
-
+  console.log(params.name);
   const columns: GridColDef[] = [
     { field: 'category', headerName: t('brands.category'), filterable: false },
     {
@@ -181,7 +216,10 @@ export function ProductListView() {
       hideable: false,
 
       renderCell: (cellParams) => (
-        <RenderCellProduct params={cellParams} onViewRow={() => handleViewRow(cellParams.row.id)} />
+        <RenderCellProduct
+          params={cellParams}
+          onViewRow={() => handleViewRow(cellParams.row._id)}
+        />
       ),
     },
     {
@@ -190,7 +228,7 @@ export function ProductListView() {
       width: 160,
       align: 'center',
       headerAlign: 'center',
-      sortable: false,
+      sortable: true,
       filterable: false,
       renderCell: (cellParams) => <RenderCellCreatedAt params={cellParams} />,
     },
@@ -201,7 +239,7 @@ export function ProductListView() {
       editable: true,
       align: 'center',
       headerAlign: 'center',
-      sortable: false,
+      sortable: true,
       filterable: false,
       renderCell: (cellParams) => <RenderCellProductCount params={cellParams} />,
     },
@@ -212,7 +250,7 @@ export function ProductListView() {
       editable: true,
       align: 'center',
       headerAlign: 'center',
-      sortable: false,
+      sortable: true,
       filterable: false,
       renderCell: (cellParams) => <RenderCellStockCount params={cellParams} />,
     },
@@ -225,7 +263,7 @@ export function ProductListView() {
       valueOptions: STATUS_OPTIONS,
       align: 'center',
       headerAlign: 'center',
-      sortable: false,
+      sortable: true,
       filterable: false,
       renderCell: (cellParams) => <RenderCellStatus params={cellParams} />,
     },
@@ -239,29 +277,143 @@ export function ProductListView() {
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
-      getActions: (cellParams) => [
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          onClick={() => handleViewRow(cellParams.row.id)}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          onClick={() => handleEditRow(cellParams.row.id)}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => {
-            handleDeleteRow(cellParams.row.id);
-          }}
-          sx={{ color: 'error.main' }}
-        />,
-      ],
+      getActions: (cellParams) => {
+        const isActive = cellParams.row.status === 'ACTIVE';
+
+        return [
+          <GridActionsCellItem
+            showInMenu
+            sx={{ transition: 'all 0.3s ease' }}
+            icon={
+              <Stack
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 1,
+                  bgcolor: (theme) => alpha(theme.palette.text.secondary, 0.16),
+                }}
+              >
+                <Iconify icon="solar:pen-bold" width={28} sx={{ color: 'text.secondary' }} />
+              </Stack>
+            }
+            label={
+              (
+                <Stack spacing={0.5}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
+                    }}
+                  >
+                    {t('brands.edit_brand')}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    {t('brands.edit_brand_desc')}
+                  </Typography>
+                </Stack>
+              ) as any
+            }
+            onClick={() => handleEditRow(cellParams.row.id)}
+          />,
+          <GridActionsCellItem
+            showInMenu
+            sx={{ transition: 'all 0.3s ease' }}
+            icon={
+              <Stack
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 1,
+                  bgcolor: (theme) => alpha(theme.palette.error.main, 0.16),
+                }}
+              >
+                <Iconify
+                  icon="solar:trash-bin-trash-bold"
+                  width={28}
+                  sx={{ color: 'error.main' }}
+                />
+              </Stack>
+            }
+            label={
+              (
+                <Stack spacing={0.5}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'error.main',
+                      fontWeight: 600,
+                      ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
+                    }}
+                  >
+                    {t('brands.delete_brand')}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'error.main', opacity: 0.8 }}>
+                    {t('brands.delete_brand_desc')}
+                  </Typography>
+                </Stack>
+              ) as any
+            }
+            onClick={() => {
+              setActionRow(cellParams.row);
+              confirmDeleteRow.onTrue();
+            }}
+          />,
+          <GridActionsCellItem
+            showInMenu
+            sx={{ transition: 'all 0.3s ease' }}
+            icon={
+              <Stack
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 1,
+                  bgcolor: (theme) =>
+                    alpha(isActive ? theme.palette.warning.main : theme.palette.success.main, 0.16),
+                }}
+              >
+                <Iconify
+                  width={28}
+                  icon={isActive ? 'solar:close-circle-bold' : 'solar:check-circle-bold'}
+                  sx={{ color: isActive ? 'warning.main' : 'success.main' }}
+                />
+              </Stack>
+            }
+            label={
+              (
+                <Stack spacing={0.5}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: isActive ? 'warning.main' : 'success.main',
+                      fontWeight: 800,
+                      ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
+                    }}
+                  >
+                    {isActive ? t('brands.deactivate_brand') : t('brands.activate_brand')}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: isActive ? 'warning.main' : 'success.main', opacity: 0.8 }}
+                  >
+                    {isActive ? t('brands.deactivate_brand_desc') : t('brands.activate_brand_desc')}
+                  </Typography>
+                </Stack>
+              ) as any
+            }
+            onClick={() => {
+              setActionRow(cellParams.row);
+              confirmToggleStatus.onTrue();
+            }}
+          />,
+        ];
+      },
     },
   ];
 
@@ -269,24 +421,51 @@ export function ProductListView() {
     columns
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
-
+  console.log({
+    // filter: {
+    //   filterModel: {
+    //     items: [],
+    //     quickFilterValues: [params.name],
+    //   },
+    // },
+    sorting: {
+      sortModel: [
+        {
+          field: params.sort.startsWith('-') ? params.sort.substring(1) : params.sort,
+          sort: params.sort.startsWith('-') ? 'desc' : 'asc',
+        },
+      ],
+    },
+  });
   return (
     <>
+      <Button onClick={() => toast.success('تجربة جديدة')}>تجربة جديدة</Button>
       <DashboardContent
         sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', maxWidth: 'unset !important' }}
         maxWidth="xl"
       >
-        <CustomBreadcrumbs
-          heading={t('brands.list')}
-          links={[
-            { name: t('navbar.overview'), href: paths.dashboard.root },
-            { name: t('navbar.brands'), href: paths.dashboard.brands },
-            { name: t('brands.list') },
-          ]}
-          action={<NewEditForm />}
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
-
+        <Stack
+          direction={{
+            xs: 'column',
+            md: 'row',
+          }}
+          justifyContent="space-between"
+          alignItems={{
+            xs: 'stretch',
+            md: 'center',
+          }}
+          sx={{
+            mb: {
+              xs: 3,
+              md: 5,
+            },
+          }}
+        >
+          <Typography typography="h3" sx={{ fontFamily: 'inherit' }}>
+            {t('brands.list')}
+          </Typography>
+          <NewEditForm />
+        </Stack>
         <Card
           sx={{
             flexGrow: { md: 1 },
@@ -296,12 +475,36 @@ export function ProductListView() {
           }}
         >
           <CustomDataGrid
+            onSortModelChange={(model) => {
+              if (model.length > 0) {
+                const { field, sort } = model[0];
+                let finalField = '';
+                if (field === 'nameAr' || field === 'nameEn') {
+                  finalField = 'name';
+                } else {
+                  finalField = field;
+                }
+                setParams({ sort: sort === 'desc' ? `-${finalField}` : finalField, page: 1 });
+              } else {
+                setParams({ sort: '', page: 1 });
+              }
+            }}
+            sortModel={
+              params.sort
+                ? [
+                    {
+                      field: params.sort.startsWith('-') ? params.sort.substring(1) : params.sort,
+                      sort: params.sort.startsWith('-') ? 'desc' : 'asc',
+                    },
+                  ]
+                : []
+            }
             getRowId={(row) => row._id}
             checkboxSelection
             disableRowSelectionOnClick
-            rows={dataFiltered}
+            rows={brands}
             columns={columns}
-            loading={productsLoading}
+            loading={brandsLoading}
             rowCount={data?.total || 0}
             paginationMode="server"
             hideFooter
@@ -317,8 +520,16 @@ export function ProductListView() {
               filter: {
                 filterModel: {
                   items: [],
-                  quickFilterValues: [params.name],
+                  quickFilterValues: [],
                 },
+              },
+              sorting: {
+                sortModel: [
+                  {
+                    field: params.sort.startsWith('-') ? params.sort.substring(1) : params.sort,
+                    sort: params.sort.startsWith('-') ? 'desc' : 'asc',
+                  },
+                ],
               },
             }}
             onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
@@ -380,7 +591,24 @@ export function ProductListView() {
       <ConfirmDialog
         open={confirmRows.value}
         onClose={confirmRows.onFalse}
-        title="Delete"
+        title={t('brands.delete_many_title')}
+        icon={
+          <Stack
+            alignItems="center"
+            justifyContent="center"
+            sx={{
+              width: 96,
+              height: 96,
+              borderRadius: '50%',
+              bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+              color: 'error.main',
+              mx: 'auto',
+            }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" width={56} />
+          </Stack>
+        }
+        cancelLabel={t('brands.cancel')}
         content={<>{t('brands.delete_confirm', { count: selectedRowIds.length })}</>}
         action={
           <Button
@@ -391,7 +619,114 @@ export function ProductListView() {
               confirmRows.onFalse();
             }}
           >
-            Delete
+            {t('brands.delete')}
+          </Button>
+        }
+      />
+
+      <ConfirmDialog
+        open={confirmDeleteRow.value}
+        onClose={confirmDeleteRow.onFalse}
+        title={t('brands.delete_brand_title', {
+          name: currentLang.value === 'ar' ? actionRow?.nameAr : actionRow?.nameEn,
+        })}
+        icon={
+          <Stack
+            alignItems="center"
+            justifyContent="center"
+            sx={{
+              width: 96,
+              height: 96,
+              borderRadius: '50%',
+              bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+              color: 'error.main',
+              mx: 'auto',
+            }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" width={56} />
+          </Stack>
+        }
+        cancelLabel={t('brands.cancel')}
+        content={<>{t('brands.delete_brand_warning')}</>}
+        action={
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              if (actionRow) {
+                handleDeleteRow(actionRow._id);
+                confirmDeleteRow.onFalse();
+                setActionRow(null);
+              }
+            }}
+          >
+            {t('brands.delete')}
+          </Button>
+        }
+      />
+
+      <ConfirmDialog
+        open={confirmToggleStatus.value}
+        onClose={confirmToggleStatus.onFalse}
+        title={
+          actionRow?.status === 'ACTIVE'
+            ? t('brands.deactivate_brand_title', {
+                name: currentLang.value === 'ar' ? actionRow?.nameAr : actionRow?.nameEn,
+              })
+            : t('brands.activate_brand_title', {
+                name: currentLang.value === 'ar' ? actionRow?.nameAr : actionRow?.nameEn,
+              })
+        }
+        icon={
+          <Stack
+            alignItems="center"
+            justifyContent="center"
+            sx={{
+              width: 96,
+              height: 96,
+              borderRadius: '50%',
+              bgcolor: (theme) =>
+                alpha(
+                  actionRow?.status === 'ACTIVE'
+                    ? theme.palette.warning.main
+                    : theme.palette.success.main,
+                  0.08
+                ),
+              color: actionRow?.status === 'ACTIVE' ? 'warning.main' : 'success.main',
+              mx: 'auto',
+            }}
+          >
+            <Iconify
+              icon={
+                actionRow?.status === 'ACTIVE'
+                  ? 'solar:close-circle-bold'
+                  : 'solar:check-circle-bold'
+              }
+              width={56}
+            />
+          </Stack>
+        }
+        cancelLabel={t('brands.cancel')}
+        content={
+          <>
+            {actionRow?.status === 'ACTIVE'
+              ? t('brands.deactivate_brand_warning')
+              : t('brands.activate_brand_warning')}
+          </>
+        }
+        action={
+          <Button
+            variant="contained"
+            color={actionRow?.status === 'ACTIVE' ? 'warning' : 'success'}
+            onClick={() => {
+              if (actionRow) {
+                handleToggleStatus(actionRow._id, actionRow.status);
+                confirmToggleStatus.onFalse();
+                setActionRow(null);
+              }
+            }}
+          >
+            {actionRow?.status === 'ACTIVE' ? t('brands.deactivate') : t('brands.activate')}
           </Button>
         }
       />
@@ -447,7 +782,7 @@ function CustomToolbar({
             </Button>
           )}
 
-          <GridToolbarColumnsButton />
+          <GridToolbarColumnsButton ref={setFilterButtonEl} />
           <GridToolbarExport />
         </Stack>
       </GridToolbarContainer>

@@ -13,6 +13,7 @@ import { fTime, fDate } from 'src/utils/format-time';
 import { useTranslate } from 'src/locales';
 
 import { Label } from 'src/components/label';
+import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -90,18 +91,29 @@ export function RenderCellProduct({
           bgcolor: 'background.neutral',
           borderRadius: 1.5,
           mr: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        <Image
-          src={params.row.imageUrl}
-          alt={params.row.nameEn}
-          fill
-          style={{
-            padding: '8px',
-            objectFit: 'contain',
-            borderRadius: '12px',
-          }}
-        />
+        {params.row.imageUrl ? (
+          <Image
+            src={params.row.imageUrl}
+            alt={params.row.nameEn}
+            fill
+            style={{
+              padding: '8px',
+              objectFit: 'contain',
+              borderRadius: '12px',
+            }}
+          />
+        ) : (
+          <Iconify
+            icon="lucide-lab:bottle-perfume"
+            width={32}
+            sx={{ color: 'text.disabled', opacity: 0.5 }}
+          />
+        )}
       </Box>
 
       <ListItemText

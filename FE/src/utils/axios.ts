@@ -1,22 +1,15 @@
 import type { AxiosRequestConfig } from 'axios';
 
 import axios from 'axios';
- 
- import { CONFIG } from 'src/config-global';
+
+import { CONFIG } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
 const axiosInstance = axios.create({ baseURL: CONFIG.serverUrl });
 // const axiosInstance = axios.create();
 
-axiosInstance.interceptors.request.use((config) => {
-  // const token = localStorage.getItem('accessToken');
-  // if (token) {
-  //   config.headers.Authorization = `Bearer ${token}`;
-  // }
-  console.log(config);
-  return config;
-});
+axiosInstance.interceptors.request.use((config) => config);
 
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -50,15 +43,11 @@ export const endpoints = {
   kanban: '/api/kanban',
   calendar: '/api/calendar',
   auth: {
-<<<<<<< HEAD
-    me: 'https://api-dev-minimal-v610.pages.dev/api/auth/me',
-    signIn: 'https://api-dev-minimal-v610.pages.dev/api/auth/sign-in',
-    signUp: 'https://api-dev-minimal-v610.pages.dev/api/auth/sign-up',
-=======
-    me: '/api/auth/me',
+    me: '/auth/me',
+    // signIn: 'https://api-dev-minimal-v610.pages.dev/api/auth/sign-in',
     signIn: '/auth/login',
-    signUp: '/api/auth/sign-up',
->>>>>>> 2f820c9bb4895ab14c40fc1c40f997b586e562bc
+    signOut: '/auth/logout',
+    signUp: 'https://api-dev-minimal-v610.pages.dev/api/auth/sign-up',
   },
   mail: {
     list: '/api/mail/list',
@@ -78,7 +67,10 @@ export const endpoints = {
   },
   brand: {
     list: '/brands',
-    details: '/brand/details',
+    details: (id: string) => `/brands/${id}`,
     search: '/brand/search',
+    deleteMany: '/brands/delete-many',
+    activate: (id: string) => `/brands/${id}/activate`,
+    deactivate: (id: string) => `/brands/${id}/deactivate`,
   },
 };

@@ -2,6 +2,9 @@
 
 import Portal from '@mui/material/Portal';
 
+// eslint-disable-next-line import/no-cycle
+import { useTranslate } from 'src/locales';
+
 import { Iconify } from '../iconify';
 import { StyledToaster } from './styles';
 import { toasterClasses } from './classes';
@@ -9,6 +12,8 @@ import { toasterClasses } from './classes';
 // ----------------------------------------------------------------------
 
 export function Snackbar() {
+  const { i18n } = useTranslate();
+  const isRTL = i18n.language === 'ar';
   return (
     <Portal>
       <StyledToaster

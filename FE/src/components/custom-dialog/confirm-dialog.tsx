@@ -1,5 +1,7 @@
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import { alpha } from '@mui/material/styles';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -13,20 +15,56 @@ export function ConfirmDialog({
   title,
   action,
   content,
+  icon,
+  cancelLabel,
   onClose,
   ...other
 }: ConfirmDialogProps) {
   return (
-    <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose} {...other}>
-      <DialogTitle sx={{ pb: 2 }}>{title}</DialogTitle>
+    <Dialog
+      fullWidth
+      maxWidth="xs"
+      open={open}
+      onClose={onClose}
+      {...other}
+      slotProps={{
+        backdrop: {
+          sx: {
+            backdropFilter: 'blur(4px)',
+            backgroundColor: (theme) => alpha(theme.palette.grey[900], 0.2),
+          },
+        },
+      }}
+    >
+      {icon && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', pt: 4, pb: 2 }}>
+          {icon}
+        </Box>
+      )}
 
-      {content && <DialogContent sx={{ typography: 'body2' }}> {content} </DialogContent>}
+      <DialogTitle sx={{ pb: 2, pt: icon ? 0 : undefined, textAlign: icon ? 'center' : 'left' }}>
+        {title}
+      </DialogTitle>
+
+      {content && (
+        <DialogContent
+          sx={{
+            typography: 'body2',
+            height: 'fit-content',
+            overflow: 'hidden',
+            textAlign: icon ? 'center' : 'left',
+          }}
+        >
+          {' '}
+          {content}{' '}
+        </DialogContent>
+      )}
 
       <DialogActions>
         {action}
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          {cancelLabel || 'Cancel'}
         </Button>
       </DialogActions>
     </Dialog>
