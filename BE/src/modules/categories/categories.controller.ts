@@ -33,24 +33,36 @@ export const getOneCategoryHandler = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getPaginatedCategoriesHandler = catchAsync(async (req, res, next) => {
-  const { page = 1, limit = 9, ...filters } = req.query;
-  const categories = await CategoriesServices.getPaginatedCategories(
-    Number(page),
-    Number(limit),
-    filters as Record<string, string>,
-  );
-  const categoriesCount = await CategoriesServices.getCategoriesCount(
-    filters as Record<string, string>,
-  );
-  res.status(200).json({
-    status: "success",
-    content: categories,
-    page: Number(page),
-    limit: Number(limit),
-    total: categoriesCount,
-  });
-});
+export const getPaginatedCategoriesHandler = catchAsync(
+  async (req, res, next) => {
+    const { page = 1, limit = 9, ...filters } = req.query;
+    const locale = (req?.headers?.cookie
+      ?.split(";")
+      .find((cookie) => cookie.trim().startsWith("i18next="))
+      ?.split("=")[1] || "en") as "ar" | "en";
+    const categories = await CategoriesServices.getPaginatedCategories(
+      Number(page),
+      Number(limit),
+      filters as Record<string, string>,
+      locale,
+    );
+    const categoriesCount = await CategoriesServices.getCategoriesCount(
+      filters as Record<string, string>,
+    );
+    res.status(200).json({
+      status: "success",
+      content: categories,
+      page: Number(page),
+      limit: Number(limit),
+      total: categoriesCount,
+      totalPages: Math.ceil(categoriesCount / Number(limit)),
+      hasNextPage: Number(page) < Math.ceil(categoriesCount / Number(limit)),
+      hasPrevPage: Number(page) > 1,
+      isEmpty: categories.length === 0,
+      canReset: Number(page) > 1 || Object.keys(filters).length > 0,
+    });
+  },
+);
 
 export const updateCategoryHandler = catchAsync(async (req, res, next) => {
   const { categoryId } = req.params;
@@ -78,7 +90,9 @@ export const updateCategoryHandler = catchAsync(async (req, res, next) => {
 
 export const deleteCategoryHandler = catchAsync(async (req, res, next) => {
   const { categoryId } = req.params;
-  const deletedCategory = await CategoriesServices.deleteCategory(categoryId as any);
+  const deletedCategory = await CategoriesServices.deleteCategory(
+    categoryId as any,
+  );
   res.status(200).json({
     status: "success",
     content: deletedCategory,
@@ -87,7 +101,9 @@ export const deleteCategoryHandler = catchAsync(async (req, res, next) => {
 
 export const activateCategoryHandler = catchAsync(async (req, res, next) => {
   const { categoryId } = req.params;
-  const activatedCategory = await CategoriesServices.activateCategory(categoryId as any);
+  const activatedCategory = await CategoriesServices.activateCategory(
+    categoryId as any,
+  );
   res.status(200).json({
     status: "success",
     content: activatedCategory,
@@ -96,7 +112,9 @@ export const activateCategoryHandler = catchAsync(async (req, res, next) => {
 
 export const deactivateCategoryHandler = catchAsync(async (req, res, next) => {
   const { categoryId } = req.params;
-  const deactivatedCategory = await CategoriesServices.deactivateCategory(categoryId as any);
+  const deactivatedCategory = await CategoriesServices.deactivateCategory(
+    categoryId as any,
+  );
   res.status(200).json({
     status: "success",
     content: deactivatedCategory,

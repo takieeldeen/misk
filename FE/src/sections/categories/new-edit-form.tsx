@@ -1,16 +1,17 @@
+'use client';
+
+import type { MouseEventHandler } from 'react';
+import type { ButtonProps } from '@mui/material';
 import type { ICategoryItem } from 'src/types/category';
 
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
+import { useEffect, useCallback } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useEffect, useCallback, type MouseEventHandler } from 'react';
 
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Button, { type ButtonProps } from '@mui/material/Button';
+import { LoadingButton } from '@mui/lab';
 import Drawer from '@mui/material/Drawer';
-import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { Box, Stack, Button, Typography, IconButton } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -20,58 +21,63 @@ import { useCreateCategory, useUpdateCategory } from 'src/actions/category';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
-import { Form, Field } from 'src/components/hook-form';
+import { Form, RHFTextField } from 'src/components/hook-form';
+import { RHFUpload } from 'src/components/hook-form/rhf-upload';
 
-// ----------------------------------------------------------------------
-
-export type NewEditFormSchemaType = zod.infer<typeof NewEditFormSchema>;
-
-export const NewEditFormSchema = zod.object({
-  nameAr: zod.string().min(1, { message: 'Arabic Name is required' }),
-  nameEn: zod.string().min(1, { message: 'English Name is required' }),
-  imageUrl: zod.any().optional(),
-});
-
-// ----------------------------------------------------------------------
-
-type Props = ButtonProps & {
+export interface NewEditProps extends ButtonProps {
   open?: boolean;
   onOpen?: () => void;
   onClose?: () => void;
   currentCategory?: ICategoryItem;
-};
+}
 
 export default function NewEditForm({
-  open: isOpened,
-  onOpen,
+  open,
   onClose,
+  onOpen,
   currentCategory,
   ...other
-}: Props) {
-  const { t } = useTranslate();
+}: NewEditProps) {
   const openForm = useBoolean();
-  const upMd = useResponsive('up', 'md');
+  const { t } = useTranslate();
+  const mdUp = useResponsive('up', 'md');
 
-  const isControlled = isOpened !== undefined;
-  const isOpen = isControlled ? isOpened : openForm.value;
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : openForm.value;
 
-  const defaultValues = useMemo(
-    () => ({
-      nameAr: currentCategory?.nameAr || '',
-      nameEn: currentCategory?.nameEn || '',
-      imageUrl: currentCategory?.imageUrl || null,
-    }),
-    [currentCategory]
-  );
+  const NewCategorySchema = zod.object({
+    nameAr: zod
+      .string()
+      .min(1, { message: t('common.please_enter', { field: t('categories.name_ar') }) }),
+    nameEn: zod
+      .string()
+      .min(1, { message: t('common.please_enter', { field: t('categories.name_en') }) }),
+    imageUrl: zod
+      .any()
+      .optional()
+      .refine(
+        (file) =>
+          !file ||
+          typeof file === 'string' ||
+          (file instanceof File && file.size <= 5 * 1024 * 1024),
+        { message: t('upload.invalid_size', { size: '5MB' }) }
+      ),
+  });
 
-  const methods = useForm<NewEditFormSchemaType>({
-    resolver: zodResolver(NewEditFormSchema),
+  const defaultValues = {
+    nameAr: currentCategory?.nameAr ?? '',
+    nameEn: currentCategory?.nameEn ?? '',
+    imageUrl: currentCategory?.imageUrl ?? null,
+  };
+
+  const methods = useForm({
+    resolver: zodResolver(NewCategorySchema),
     defaultValues,
   });
 
   const {
-    reset,
     handleSubmit,
+    reset,
     formState: { isSubmitting },
   } = methods;
 
@@ -79,7 +85,8 @@ export default function NewEditForm({
     if (isOpen) {
       reset(defaultValues);
     }
-  }, [isOpen, currentCategory, reset, defaultValues]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, currentCategory]);
 
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
@@ -116,80 +123,87 @@ export default function NewEditForm({
       }
     } catch (error) {
       console.error(error);
-      toast.error(currentCategory ? (t('categories.update_error') || 'Failed to update') : t('categories.create_error'));
+      toast.error(
+        currentCategory
+          ? t('categories.update_error') || 'Failed to update'
+          : t('categories.create_error')
+      );
     }
   });
 
   return (
     <>
-      {!isControlled && (
-        <Button {...other} onClick={handleOpen}>
-          {other.children}
-        </Button>
-      )}
+      {!isControlled && <Button onClick={handleOpen} {...other} />}
 
       <Drawer
         open={isOpen}
         onClose={handleClose}
-        anchor="right"
-        slotProps={{ backdrop: { invisible: true } }}
-        PaperProps={{ sx: { width: { xs: 1, md: 480 } } }}
+        anchor="left"
+        slotProps={{ backdrop: { invisible: false, sx: { backdropFilter: 'blur(4px)' } } }}
+        PaperProps={{ sx: { width: mdUp ? 440 : 1 } }}
       >
-        <Form methods={methods} onSubmit={onSubmit}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            sx={{ p: 2, borderBottom: (theme) => `solid 1px ${theme.palette.divider}` }}
-          >
-            <Typography variant="h6">
-              {currentCategory ? t('categories.edit_category') : t('categories.new_category')}
-            </Typography>
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={isSubmitting}
-              sx={{ display: { xs: 'none', md: 'inline-flex' } }}
-            >
-              {currentCategory ? t('common.update') || 'Update' : t('common.create') || 'Create'}
-            </LoadingButton>
-            <Iconify
-              icon="mingcute:close-line"
-              onClick={handleClose}
-              sx={{ display: { md: 'none' }, cursor: 'pointer' }}
-            />
-          </Stack>
-
-          <Stack spacing={3} sx={{ p: 3 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-start"
+          sx={{
+            borderBottomWidth: '1px',
+            borderBottomStyle: 'solid',
+            borderBottomColor: 'divider',
+            borderColor: 'divider',
+          }}
+        >
+          <Stack direction="column" sx={{ p: 1 }}>
+            <Typography variant="h5">{t('categories.new_category')}</Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              {currentCategory
-                ? t('categories.edit_category_desc')
-                : t('categories.new_category_description')}
+              {t('categories.new_category_description')}
             </Typography>
+          </Stack>
+          <IconButton sx={{ borderRadius: 0, p: 1, height: 40, width: 40 }} onClick={handleClose}>
+            <Iconify icon="mingcute:close-line" />
+          </IconButton>
+        </Stack>
 
-            <Box
-              columnGap={2}
-              rowGap={3}
-              display="grid"
-              gridTemplateColumns={{ xs: '1fr', md: '1fr 1fr' }}
-            >
-              <Field.Text
-                name="nameEn"
-                label={t('categories.name_en')}
-                placeholder={t('common.please_enter', { field: t('categories.name_en') })}
-              />
-              <Field.Text
-                name="nameAr"
-                label={t('categories.name_ar')}
-                placeholder={t('common.please_enter', { field: t('categories.name_ar') })}
-              />
-            </Box>
-
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">{t('categories.upload_logo')}</Typography>
-              <Field.Upload name="imageUrl" />
+        <Form
+          methods={methods}
+          onSubmit={onSubmit}
+          formProps={{
+            style: {
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100%',
+            },
+          }}
+        >
+          <Stack spacing={2} sx={{ py: 3, px: 1, flex: 1, overflowY: 'auto' }}>
+            <Stack spacing={1}>
+              <Typography sx={{ fontSize: 16, fontWeight: 600 }}>
+                {t('categories.name_ar')}
+              </Typography>
+              <RHFTextField autoFocus name="nameAr" placeholder={t('categories.name_ar')} />
             </Stack>
-
+            <Stack spacing={1}>
+              <Typography sx={{ fontSize: 16, fontWeight: 600 }}>
+                {t('categories.name_en')}
+              </Typography>
+              <RHFTextField name="nameEn" placeholder={t('categories.name_en')} />
+            </Stack>
+            <Stack spacing={1}>
+              <Typography sx={{ fontSize: 16, fontWeight: 600 }}>
+                {t('categories.image')}
+              </Typography>
+              <RHFUpload
+                name="imageUrl"
+                maxFiles={1}
+                accept={{ 'image/*': [] }}
+                maxSize={1024 * 1024 * 5}
+                onDelete={() => {
+                  methods.setValue('imageUrl', null);
+                }}
+              />
+            </Stack>
+          </Stack>
+          <Box sx={{ p: 1 }}>
             <LoadingButton
               fullWidth
               variant="contained"
@@ -200,7 +214,7 @@ export default function NewEditForm({
             >
               {currentCategory ? t('common.update') || 'Update' : t('common.create') || 'Create'}
             </LoadingButton>
-          </Stack>
+          </Box>
         </Form>
       </Drawer>
     </>
