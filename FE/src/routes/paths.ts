@@ -53,6 +53,11 @@ export const paths = {
       edit: (id: string) => `${ROOTS.DASHBOARD}/brands/${id}/edit`,
       details: (id: string) => `${ROOTS.DASHBOARD}/brands/${id}`,
     },
+    categories: {
+      root: `${ROOTS.DASHBOARD}/categories`,
+      list: `${ROOTS.DASHBOARD}/categories`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/categories/${id}`,
+    },
     group: {
       root: `${ROOTS.DASHBOARD}/group`,
       five: `${ROOTS.DASHBOARD}/group/five`,

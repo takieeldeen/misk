@@ -63,7 +63,6 @@ export function AuthProvider({ children }: Props) {
     checkUserSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log(state.user, 'USER STATE');
   // ----------------------------------------------------------------------
 
   const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated';

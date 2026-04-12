@@ -24,6 +24,7 @@ export function useTranslate(ns?: string) {
   const { t, i18n } = useTranslation(ns);
   const fallback = allLangs.filter((lang) => lang.value === fallbackLng)[0];
   const currentLang = allLangs.find((lang) => lang.value === resolvedLanguage);
+  i18n.language = resolvedLanguage as LanguageValue;
   const onChangeLang = useCallback(
     async (newLang: LanguageValue) => {
       try {

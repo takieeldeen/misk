@@ -1,7 +1,8 @@
 import type { AxiosRequestConfig } from 'axios';
 import type { IBrandItem } from 'src/types/brand';
-import type { APIListResponse } from 'src/types/common';
+import type { APIListResponse, APIDetailsResponse } from 'src/types/common';
 
+import { cache } from 'react';
 import { useQueryStates } from 'nuqs';
 import { useQuery, QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -15,42 +16,55 @@ import { getFetcher } from './api';
 
 export const useBrandsParams = () => useQueryStates(brandParams);
 
-export async function prefetchBrands({
-  page = PAGINATION.DEFAULT_PAGE,
-  pageSize = PAGINATION.DEFAULT_PAGE_SIZE,
-  name = '',
-  status = [],
-  sort = '',
-  filters = {},
-}: {
-  page: number;
-  pageSize: number;
-  name: string;
-  status: string[];
-  sort?: string;
-  filters?: Record<string, string | number>;
-}) {
-  const URL: [string, AxiosRequestConfig] = [
-    endpoints.brand.list,
-    {
-      params: {
-        page,
-        size: pageSize,
-        name,
-        status: status.join(','),
-        sort,
-        ...filters,
+export const prefetchBrands = cache(
+  async ({
+    page = PAGINATION.DEFAULT_PAGE,
+    pageSize = PAGINATION.DEFAULT_PAGE_SIZE,
+    name = '',
+    status = [],
+    sort = '',
+    filters = {},
+  }: {
+    page: number;
+    pageSize: number;
+    name: string;
+    status: string[];
+    sort?: string;
+    filters?: Record<string, string | number>;
+  }) => {
+    const URL: [string, AxiosRequestConfig] = [
+      endpoints.brand.list,
+      {
+        params: {
+          page,
+          size: pageSize,
+          name,
+          status: status.join(','),
+          sort,
+          ...filters,
+        },
       },
-    },
-  ];
-  const queryKey = ['brand', 'list', URL];
+    ];
+    const queryKey = ['brand', 'list', URL];
+    const queryClient = new QueryClient();
+    const query = await queryClient.prefetchQuery<APIListResponse<IBrandItem>>({
+      queryKey,
+      queryFn: getFetcher(URL),
+    });
+    return { queryClient, query, queryKey };
+  }
+);
+
+export const prefetchBrand = cache(async (id: string) => {
+  const URL: [string, AxiosRequestConfig] = [endpoints.brand.details(id), {}];
+  const queryKey = ['brand', 'details', id];
   const queryClient = new QueryClient();
-  const query = await queryClient.prefetchQuery<APIListResponse<IBrandItem>>({
+  const query = await queryClient.prefetchQuery<IBrandItem>({
     queryKey,
     queryFn: getFetcher(URL),
   });
   return { queryClient, query, queryKey };
-}
+});
 
 export function useGetBrands({
   page = PAGINATION.DEFAULT_PAGE,
@@ -94,7 +108,7 @@ export function useGetBrands({
 export function useGetBrand(id: string) {
   const URL: [string, AxiosRequestConfig] = [endpoints.brand.details(id), {}];
   const queryKey = ['brand', 'details', id];
-  const query = useQuery<IBrandItem>({
+  const query = useQuery<APIDetailsResponse<IBrandItem>>({
     queryKey,
     queryFn: getFetcher(URL),
     enabled: !!id,
@@ -119,6 +133,29 @@ export function useCreateBrand() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['brand', 'list'] });
+    },
+  });
+}
+
+export function useUpdateBrand() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      const formData = new FormData();
+      formData.append('nameAr', data.nameAr);
+      formData.append('nameEn', data.nameEn);
+
+      if (data.imageUrl && data.imageUrl instanceof File) {
+        formData.append('imageUrl', data.imageUrl);
+      }
+      
+      const res = await axios.patch(endpoints.brand.details(id), formData);
+      return res;
+    },
+    onSuccess: (res, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['brand', 'list'] });
+      queryClient.invalidateQueries({ queryKey: ['brand', 'details', variables.id] });
     },
   });
 }
@@ -157,8 +194,9 @@ export function useActivateBrand() {
       const res = await axios.patch(endpoints.brand.activate(id));
       return res;
     },
-    onSuccess: () => {
+    onSuccess: (data, id) => {
       queryClient.invalidateQueries({ queryKey: ['brand', 'list'] });
+      queryClient.invalidateQueries({ queryKey: ['brand', 'details', id] });
     },
   });
 }
@@ -171,8 +209,9 @@ export function useDeactivateBrand() {
       const res = await axios.patch(endpoints.brand.deactivate(id));
       return res;
     },
-    onSuccess: () => {
+    onSuccess: (data, id) => {
       queryClient.invalidateQueries({ queryKey: ['brand', 'list'] });
+      queryClient.invalidateQueries({ queryKey: ['brand', 'details', id] });
     },
   });
 }

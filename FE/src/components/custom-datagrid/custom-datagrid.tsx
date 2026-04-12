@@ -33,6 +33,7 @@ export function CustomDataGrid({ localeText, ...other }: DataGridProps) {
       filterPanelDeleteIconLabel: t('datagrid.removeFilter'),
       columnMenuHideColumn: t('datagrid.hideColumn'),
       columnMenuUnsort: t('datagrid.unsort'),
+      columnsManagementSearchPlaceholder: t('datagrid.search'),
       ...localeText,
     }),
     [t, localeText]

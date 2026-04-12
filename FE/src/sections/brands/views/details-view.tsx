@@ -3,84 +3,71 @@
 import { useParams } from 'next/navigation';
 
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
-import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
 
-import { fDateTime } from 'src/utils/format-time';
+import { paths } from 'src/routes/paths';
+import { RouterLink } from 'src/routes/components';
 
 import { useTranslate } from 'src/locales';
 import { useGetBrand } from 'src/actions/brand';
 
-import { Label } from 'src/components/label';
-import { Image } from 'src/components/image';
-import { Scrollbar } from 'src/components/scrollbar';
+import { Iconify } from 'src/components/iconify';
+
+import { SkeletonView } from './skeleton-view';
+import { DetailsSummary } from '../details-summary';
+import { ProductDetailsCarousel } from '../details-carousel';
 
 // ----------------------------------------------------------------------
 
-export default function BrandDetailsView() {
-  const params = useParams();
-  const { brandId } = params;
-  const { t, currentLang } = useTranslate();
+export function BrandDetailsView() {
+  const { brandId } = useParams();
+  const { data, isLoading } = useGetBrand(brandId as string);
+  const brand = data?.content;
+  const { t, i18n } = useTranslate();
 
-  const { data: brand, isLoading, error } = useGetBrand(brandId as string);
-
-  if (isLoading) return <Typography sx={{ p: 5 }}>Loading...</Typography>;
-  if (error || !brand) return <Typography sx={{ p: 5 }}>Error loading brand details</Typography>;
-
-  const localizedName = currentLang.value === 'ar' ? brand.nameAr : brand.nameEn;
-
+  if (isLoading) return <SkeletonView />;
   return (
-    <Scrollbar sx={{ p: 3, height: 1 }}>
-      <Stack spacing={3}>
-        <Typography variant="h4">{t('brands.brand_details') || 'Brand Details'}</Typography>
+    <Container sx={{ mt: 5, mb: 10 }}>
+      <Button
+        component={RouterLink}
+        href={paths.dashboard.brand.list}
+        startIcon={
+          <Iconify
+            icon={i18n.language === 'ar' ? 'eva:arrow-ios-forward-fill' : 'eva:arrow-ios-back-fill'}
+            width={16}
+          />
+        }
+        sx={{ mb: 3 }}
+      >
+        {t('brands.return_to_list')}
+      </Button>
 
-        <Card sx={{ p: 3 }}>
-          <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 4 }}>
-              <Image
-                alt={localizedName}
-                src={brand.imageUrl}
-                ratio="1/1"
-                sx={{ borderRadius: 1.5, bgcolor: 'background.neutral' }}
-              />
-            </Grid>
+      <Grid container spacing={{ xs: 3, md: 5, lg: 8 }}>
+        <Grid xs={12} md={6} lg={7}>
+          <ProductDetailsCarousel images={brand?.imageUrl ? [brand?.imageUrl] : []} />
+        </Grid>
 
-            <Grid size={{ xs: 12, md: 8 }}>
-              <Stack spacing={2}>
-                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                  <Typography variant="h5">{localizedName}</Typography>
-                  <Label color={brand.status === 'ACTIVE' ? 'success' : 'error'}>
-                    {brand.status}
-                  </Label>
-                </Stack>
+        <Grid xs={12} md={6} lg={5}>
+          {brand && <DetailsSummary brand={brand} disableActions={!brand?.status} />}
+        </Grid>
+      </Grid>
 
-                <Divider />
+      <Card>
+        {/* {tabs.value === 'description' && (
+          <ProductDetailsDescription description={product?.description} />
+        )}
 
-                <Stack spacing={1.5}>
-                  <DetailItem label={t('brands.name_en')} value={brand.nameEn} />
-                  <DetailItem label={t('brands.name_ar')} value={brand.nameAr} />
-                  <DetailItem label={t('brands.products')} value={brand.products} />
-                  <DetailItem label={t('brands.stock')} value={brand.stock} />
-                  <DetailItem label={t('brands.created_at')} value={fDateTime(brand.createdAt)} />
-                </Stack>
-              </Stack>
-            </Grid>
-          </Grid>
-        </Card>
-      </Stack>
-    </Scrollbar>
-  );
-}
-
-function DetailItem({ label, value }: { label: string; value: string | number }) {
-  return (
-    <Stack direction="row" justifyContent="space-between">
-      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-        {label}
-      </Typography>
-      <Typography variant="subtitle2">{value}</Typography>
-    </Stack>
+        {tabs.value === 'reviews' && (
+          <ProductDetailsReview
+            ratings={product?.ratings}
+            reviews={product?.reviews}
+            totalRatings={product?.totalRatings}
+            totalReviews={product?.totalReviews}
+          />
+        )} */}
+      </Card>
+    </Container>
   );
 }

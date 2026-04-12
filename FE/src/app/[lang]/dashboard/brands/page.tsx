@@ -16,7 +16,6 @@ export const metadata: Metadata = {
 async function BrandsPage({ searchParams }: { searchParams: Record<string, string> }) {
   const params = await loadSearchParams(searchParams);
   const { queryClient } = await prefetchBrands(params);
-
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense fallback={<div>Loading...</div>}>

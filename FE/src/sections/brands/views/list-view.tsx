@@ -19,7 +19,6 @@ import { Pagination, Typography } from '@mui/material';
 import {
   gridClasses,
   GridToolbarExport,
-  GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarColumnsButton,
 } from '@mui/x-data-grid';
@@ -53,6 +52,7 @@ import { ProductTableFiltersResult } from '../table-filters-result';
 import {
   RenderCellStatus,
   RenderCellProduct,
+  RenderCellActions,
   RenderCellCreatedAt,
   RenderCellStockCount,
   RenderCellProductCount,
@@ -73,7 +73,6 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 export function BrandListView() {
   const { t, currentLang } = useTranslate();
-
   const confirmRows = useBoolean();
   const confirmDeleteRow = useBoolean();
   const confirmToggleStatus = useBoolean();
@@ -142,7 +141,6 @@ export function BrandListView() {
     },
     [deleteBrand, t]
   );
-  console.log(brands);
   const handleDeleteRows = useCallback(() => {
     const ids = selectedRowIds.map((id) => id.toString());
     deleteManyBrands(ids, {
@@ -177,13 +175,6 @@ export function BrandListView() {
     [activateBrand, deactivateBrand, t]
   );
 
-  const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.brand.edit(id));
-    },
-    [router]
-  );
-
   const handleViewRow = useCallback(
     (id: string) => {
       router.push(paths.dashboard.brand.details(id));
@@ -205,7 +196,6 @@ export function BrandListView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [filters.state, selectedRowIds]
   );
-  console.log(params.name);
   const columns: GridColDef[] = [
     { field: 'category', headerName: t('brands.category'), filterable: false },
     {
@@ -277,143 +267,7 @@ export function BrandListView() {
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
-      getActions: (cellParams) => {
-        const isActive = cellParams.row.status === 'ACTIVE';
-
-        return [
-          <GridActionsCellItem
-            showInMenu
-            sx={{ transition: 'all 0.3s ease' }}
-            icon={
-              <Stack
-                alignItems="center"
-                justifyContent="center"
-                sx={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 1,
-                  bgcolor: (theme) => alpha(theme.palette.text.secondary, 0.16),
-                }}
-              >
-                <Iconify icon="solar:pen-bold" width={28} sx={{ color: 'text.secondary' }} />
-              </Stack>
-            }
-            label={
-              (
-                <Stack spacing={0.5}>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontWeight: 600,
-                      ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
-                    }}
-                  >
-                    {t('brands.edit_brand')}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    {t('brands.edit_brand_desc')}
-                  </Typography>
-                </Stack>
-              ) as any
-            }
-            onClick={() => handleEditRow(cellParams.row.id)}
-          />,
-          <GridActionsCellItem
-            showInMenu
-            sx={{ transition: 'all 0.3s ease' }}
-            icon={
-              <Stack
-                alignItems="center"
-                justifyContent="center"
-                sx={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 1,
-                  bgcolor: (theme) => alpha(theme.palette.error.main, 0.16),
-                }}
-              >
-                <Iconify
-                  icon="solar:trash-bin-trash-bold"
-                  width={28}
-                  sx={{ color: 'error.main' }}
-                />
-              </Stack>
-            }
-            label={
-              (
-                <Stack spacing={0.5}>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: 'error.main',
-                      fontWeight: 600,
-                      ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
-                    }}
-                  >
-                    {t('brands.delete_brand')}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'error.main', opacity: 0.8 }}>
-                    {t('brands.delete_brand_desc')}
-                  </Typography>
-                </Stack>
-              ) as any
-            }
-            onClick={() => {
-              setActionRow(cellParams.row);
-              confirmDeleteRow.onTrue();
-            }}
-          />,
-          <GridActionsCellItem
-            showInMenu
-            sx={{ transition: 'all 0.3s ease' }}
-            icon={
-              <Stack
-                alignItems="center"
-                justifyContent="center"
-                sx={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 1,
-                  bgcolor: (theme) =>
-                    alpha(isActive ? theme.palette.warning.main : theme.palette.success.main, 0.16),
-                }}
-              >
-                <Iconify
-                  width={28}
-                  icon={isActive ? 'solar:close-circle-bold' : 'solar:check-circle-bold'}
-                  sx={{ color: isActive ? 'warning.main' : 'success.main' }}
-                />
-              </Stack>
-            }
-            label={
-              (
-                <Stack spacing={0.5}>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: isActive ? 'warning.main' : 'success.main',
-                      fontWeight: 800,
-                      ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
-                    }}
-                  >
-                    {isActive ? t('brands.deactivate_brand') : t('brands.activate_brand')}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: isActive ? 'warning.main' : 'success.main', opacity: 0.8 }}
-                  >
-                    {isActive ? t('brands.deactivate_brand_desc') : t('brands.activate_brand_desc')}
-                  </Typography>
-                </Stack>
-              ) as any
-            }
-            onClick={() => {
-              setActionRow(cellParams.row);
-              confirmToggleStatus.onTrue();
-            }}
-          />,
-        ];
-      },
+      renderCell: (cellParams) => <RenderCellActions params={cellParams} />,
     },
   ];
 
@@ -421,25 +275,8 @@ export function BrandListView() {
     columns
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
-  console.log({
-    // filter: {
-    //   filterModel: {
-    //     items: [],
-    //     quickFilterValues: [params.name],
-    //   },
-    // },
-    sorting: {
-      sortModel: [
-        {
-          field: params.sort.startsWith('-') ? params.sort.substring(1) : params.sort,
-          sort: params.sort.startsWith('-') ? 'desc' : 'asc',
-        },
-      ],
-    },
-  });
   return (
     <>
-      <Button onClick={() => toast.success('تجربة جديدة')}>تجربة جديدة</Button>
       <DashboardContent
         sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', maxWidth: 'unset !important' }}
         maxWidth="xl"
@@ -464,7 +301,13 @@ export function BrandListView() {
           <Typography typography="h3" sx={{ fontFamily: 'inherit' }}>
             {t('brands.list')}
           </Typography>
-          <NewEditForm />
+          <NewEditForm
+            variant="contained"
+            color="primary"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            {t('brands.new_brand')}
+          </NewEditForm>
         </Stack>
         <Card
           sx={{

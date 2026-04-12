@@ -73,4 +73,12 @@ export const endpoints = {
     activate: (id: string) => `/brands/${id}/activate`,
     deactivate: (id: string) => `/brands/${id}/deactivate`,
   },
+  category: {
+    list: '/categories',
+    details: (id: string) => `/categories/${id}`,
+    search: '/category/search',
+    deleteMany: '/categories/delete-many',
+    activate: (id: string) => `/categories/${id}/activate`,
+    deactivate: (id: string) => `/categories/${id}/deactivate`,
+  },
 };

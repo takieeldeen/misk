@@ -23,9 +23,12 @@ function DetailsDrawer({ backLink, children, ...props }: DetailsDrawerProps) {
     (event: {}, reason: 'backdropClick' | 'escapeKeyDown') => {
       props.onClose?.(event, reason);
       setOpen(false);
-      router.push(backLink);
+
+      setTimeout(() => {
+        router.back();
+      }, 200);
     },
-    [backLink, props, router]
+    [props, router]
   );
   useEffect(() => {
     setOpen(props.open || false);
@@ -35,7 +38,7 @@ function DetailsDrawer({ backLink, children, ...props }: DetailsDrawerProps) {
       {...props}
       open={open}
       onClose={onClose}
-      keepMounted={false}
+      keepMounted
       PaperProps={{
         sx: {
           width: mdUp ? '80%' : 1,

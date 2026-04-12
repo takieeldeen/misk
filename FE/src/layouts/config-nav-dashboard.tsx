@@ -6,6 +6,7 @@ import { CONFIG } from 'src/config-global';
 import { useTranslate } from 'src/locales';
 
 import { SvgColor } from 'src/components/svg-color';
+import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -56,9 +57,16 @@ export function useNavData() {
         subheader: t('navbar.overview'),
         items: [
           { title: t('navbar.insights'), path: paths.dashboard.root, icon: ICONS.dashboard },
-          { title: t('navbar.two'), path: paths.dashboard.two, icon: ICONS.ecommerce },
-          { title: t('navbar.three'), path: paths.dashboard.three, icon: ICONS.analytics },
-          { title: t('navbar.brands'), path: paths.dashboard.brands, icon: ICONS.ecommerce },
+          {
+            title: t('navbar.categories'),
+            path: paths.dashboard.categories.list,
+            icon: <Iconify icon="game-icons:liquid-soap" />,
+          },
+          {
+            title: t('navbar.brands'),
+            path: paths.dashboard.brands,
+            icon: <Iconify icon="solar:shop-bold" />,
+          },
         ],
       },
       /**
