@@ -5,8 +5,8 @@ import { paths } from 'src/routes/paths';
 import { CONFIG } from 'src/config-global';
 import { useTranslate } from 'src/locales';
 
-import { SvgColor } from 'src/components/svg-color';
 import { Iconify } from 'src/components/iconify';
+import { SvgColor } from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------
 
@@ -76,13 +76,12 @@ export function useNavData() {
         subheader: t('navbar.management'),
         items: [
           {
-            title: t('navbar.group'),
-            path: paths.dashboard.group.root,
+            title: t('navbar.products'),
+            path: paths.dashboard.products.root,
             icon: ICONS.user,
             children: [
-              { title: t('navbar.four'), path: paths.dashboard.group.root },
-              { title: t('navbar.five'), path: paths.dashboard.group.five },
-              { title: t('navbar.six'), path: paths.dashboard.group.six },
+              { title: t('navbar.catalog'), path: paths.dashboard.products.catalog },
+              { title: t('navbar.variants'), path: paths.dashboard.products.variants },
             ],
           },
         ],

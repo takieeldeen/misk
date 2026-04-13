@@ -46,7 +46,6 @@ import { CustomDataGrid } from 'src/components/custom-datagrid';
 
 import NewEditForm from '../new-edit-form';
 import { TableToolbar } from '../table-toolbar';
-import { ProductTableFiltersResult } from '../table-filters-result';
 import {
   RenderCellStatus,
   RenderCellProduct,

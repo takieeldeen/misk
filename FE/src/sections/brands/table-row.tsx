@@ -22,6 +22,7 @@ import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+
 import NewEditForm from './new-edit-form';
 
 // ----------------------------------------------------------------------
@@ -41,7 +42,9 @@ export function RenderCellStockCount({ params }: ParamsProps) {
 export function RenderCellStatus({ params }: ParamsProps) {
   return (
     <Label variant="soft" color={(params.row.status === 'ACTIVE' && 'success') || 'warning'}>
-      {params.row.status === 'ACTIVE' ? t('brands.active') : t('brands.inactive')}
+      {params.row.status === 'ACTIVE'
+        ? (t('brands.active') ?? t('common.unknown'))
+        : (t('brands.inactive') ?? t('common.unknown'))}
     </Label>
   );
 }
@@ -133,7 +136,7 @@ export function RenderCellProduct({
         }
         secondary={
           <Box component="div" sx={{ typography: 'body2', color: 'text.disabled' }}>
-            {params.row.category}
+            {i18n.language === 'ar' ? params.row.categoryAr : params.row.categoryEn}
           </Box>
         }
         sx={{ display: 'flex', flexDirection: 'column' }}

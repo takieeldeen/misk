@@ -63,6 +63,11 @@ export const paths = {
       five: `${ROOTS.DASHBOARD}/group/five`,
       six: `${ROOTS.DASHBOARD}/group/six`,
     },
+    products: {
+      root: `${ROOTS.DASHBOARD}/products`,
+      catalog: `${ROOTS.DASHBOARD}/products/catalog`,
+      variants: `${ROOTS.DASHBOARD}/products/variants`,
+    },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,
       list: `${ROOTS.DASHBOARD}/product`,

@@ -6,7 +6,11 @@ import { CONFIG } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
-const axiosInstance = axios.create({ baseURL: CONFIG.serverUrl });
+const baseURL = typeof window === 'undefined' 
+  ? 'http://localhost:8080/api/v1'
+  : CONFIG.serverUrl;
+
+const axiosInstance = axios.create({ baseURL });
 // const axiosInstance = axios.create();
 
 axiosInstance.interceptors.request.use((config) => config);
@@ -61,9 +65,11 @@ export const endpoints = {
     search: '/api/post/search',
   },
   product: {
-    list: '/api/product/list',
-    details: '/api/product/details',
-    search: '/api/product/search',
+    list: '/products',
+    details: (id: string) => `/products/${id}`,
+    search: '/products/search',
+    activate: (id: string) => `/products/${id}/activate`,
+    deactivate: (id: string) => `/products/${id}/deactivate`,
   },
   brand: {
     list: '/brands',
