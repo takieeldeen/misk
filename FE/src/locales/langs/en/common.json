@@ -167,7 +167,14 @@
     "created_at": "Created At",
     "male": "Male",
     "female": "Female",
-    "neutral": "Unisex"
+    "neutral": "Unisex",
+    "quantity": "Quantity",
+    "price": "Price",
+    "view_desc": "Show the details of the product",
+    "edit_desc": "Modify the product details and information",
+    "delete_desc": "Delete the product and all of its related data",
+    "activate_desc": "Make this product active and available to users",
+    "deactivate_desc": "Temporarily disable this product from the catalog"
   },
   "datagrid": {
     "columns": "Columns",

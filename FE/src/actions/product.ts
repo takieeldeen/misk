@@ -80,9 +80,9 @@ export function useGetProducts({
   pageSize = PAGINATION.DEFAULT_PAGE_SIZE,
   name = '',
   status = [],
-  category = '',
-  brand = '',
-  gender = '',
+  category = [],
+  brand = [],
+  gender = [],
   sort = '',
   filters = {},
 }: {
@@ -90,9 +90,9 @@ export function useGetProducts({
   pageSize: number;
   name?: string;
   status?: string[];
-  category?: string;
-  brand?: string;
-  gender?: string;
+  category?: string[];
+  brand?: string[];
+  gender?: string[];
   sort?: string;
   filters?: Record<string, string | number>;
 }) {
@@ -103,10 +103,10 @@ export function useGetProducts({
         page,
         size: pageSize,
         name,
-        status: status.join(','),
-        category,
-        brand,
-        gender,
+        status: status?.join(','),
+        category: category?.join(','),
+        brand: brand?.join(','),
+        gender: gender?.join(','),
         sort,
         ...filters,
       },

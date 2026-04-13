@@ -10,13 +10,13 @@ export const productParams = {
   status: parseAsArrayOf(parseAsString).withDefault([]).withOptions({
     clearOnDefault: true,
   }),
-  category: parseAsString.withDefault('').withOptions({
+  category: parseAsArrayOf(parseAsString).withDefault([]).withOptions({
     clearOnDefault: true,
   }),
-  brand: parseAsString.withDefault('').withOptions({
+  brand: parseAsArrayOf(parseAsString).withDefault([]).withOptions({
     clearOnDefault: true,
   }),
-  gender: parseAsString.withDefault('').withOptions({
+  gender: parseAsArrayOf(parseAsString).withDefault([]).withOptions({
     clearOnDefault: true,
   }),
   page: parseAsInteger.withDefault(PAGINATION.DEFAULT_PAGE).withOptions({ clearOnDefault: true }),

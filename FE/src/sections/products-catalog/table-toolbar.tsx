@@ -84,8 +84,8 @@ export function ProductTableToolbar({ filters }: Props) {
   );
 
   const handleFilterGender = useCallback(
-    (event: SyntheticEvent<Element, Event>, newValue: any | null) => {
-      const newGender = newValue ? newValue.value : '';
+    (event: SyntheticEvent<Element, Event>, newValue: any[]) => {
+      const newGender = newValue.map((option) => option.value);
       local.setState({ gender: newGender });
       filters.setState({ gender: newGender, page: 1 });
     },
@@ -93,8 +93,8 @@ export function ProductTableToolbar({ filters }: Props) {
   );
 
   const handleFilterCategory = useCallback(
-    (event: SyntheticEvent<Element, Event>, newValue: any | null) => {
-      const newCategory = newValue ? newValue._id : '';
+    (event: SyntheticEvent<Element, Event>, newValue: any[]) => {
+      const newCategory = newValue.map((option) => option._id);
       local.setState({ category: newCategory });
       filters.setState({ category: newCategory, page: 1 });
     },
@@ -102,8 +102,8 @@ export function ProductTableToolbar({ filters }: Props) {
   );
 
   const handleFilterBrand = useCallback(
-    (event: SyntheticEvent<Element, Event>, newValue: any | null) => {
-      const newBrand = newValue ? newValue._id : '';
+    (event: SyntheticEvent<Element, Event>, newValue: any[]) => {
+      const newBrand = newValue.map((option) => option._id);
       local.setState({ brand: newBrand });
       filters.setState({ brand: newBrand, page: 1 });
     },
@@ -169,9 +169,10 @@ export function ProductTableToolbar({ filters }: Props) {
 
       <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 200 } }}>
         <Autocomplete
+          multiple
           options={GENDER_OPTIONS}
           getOptionLabel={(option) => (i18n.language === 'ar' ? option.nameAr : option.nameEn)}
-          value={GENDER_OPTIONS.find((option) => option.value === local.state.gender) || null}
+          value={GENDER_OPTIONS.filter((option) => local.state.gender.includes(option.value))}
           onChange={handleFilterGender}
           renderInput={(params) => (
             <TextField
@@ -181,14 +182,21 @@ export function ProductTableToolbar({ filters }: Props) {
               sx={{ minWidth: '100%', flex: 1 }}
             />
           )}
+          renderOption={(props, option, { selected }) => (
+            <li {...props} key={option.id}>
+              <Checkbox size="small" disableRipple checked={selected} />
+              {i18n.language === 'ar' ? option.nameAr : option.nameEn}
+            </li>
+          )}
         />
       </FormControl>
 
       <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 200 } }}>
         <Autocomplete
+          multiple
           options={categories}
           getOptionLabel={(option: any) => (i18n.language === 'ar' ? option.nameAr : option.nameEn)}
-          value={categories.find((option: any) => option._id === local.state.category) || null}
+          value={categories.filter((option: any) => local.state.category.includes(option._id))}
           isOptionEqualToValue={(option, value) => option._id === value._id}
           onChange={handleFilterCategory}
           renderInput={(params) => (
@@ -199,14 +207,21 @@ export function ProductTableToolbar({ filters }: Props) {
               sx={{ minWidth: '100%', flex: 1 }}
             />
           )}
+          renderOption={(props, option, { selected }) => (
+            <li {...props} key={option.id}>
+              <Checkbox size="small" disableRipple checked={selected} />
+              {i18n.language === 'ar' ? option.nameAr : option.nameEn}
+            </li>
+          )}
         />
       </FormControl>
 
       <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 200 } }}>
         <Autocomplete
+          multiple
           options={brands}
           getOptionLabel={(option: any) => (i18n.language === 'ar' ? option.nameAr : option.nameEn)}
-          value={brands.find((option: any) => option._id === local.state.brand) || null}
+          value={brands.filter((option: any) => local.state.brand.includes(option._id))}
           isOptionEqualToValue={(option, value) => option._id === value._id}
           onChange={handleFilterBrand}
           renderInput={(params) => (
@@ -216,6 +231,12 @@ export function ProductTableToolbar({ filters }: Props) {
               placeholder={t('common.brand')}
               sx={{ minWidth: '100%', flex: 1 }}
             />
+          )}
+          renderOption={(props, option, { selected }) => (
+            <li {...props} key={option.id}>
+              <Checkbox size="small" disableRipple checked={selected} />
+              {i18n.language === 'ar' ? option.nameAr : option.nameEn}
+            </li>
           )}
         />
       </FormControl>

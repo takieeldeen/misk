@@ -1,6 +1,6 @@
+import type { Theme, SxProps } from '@mui/material/styles';
 import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
-import type { Theme, SxProps } from '@mui/material/styles';
 
 import { useCallback } from 'react';
 
@@ -33,16 +33,16 @@ export function ProductTableFiltersResult({ filters, totalResults, sx }: Props) 
   );
 
   const handleRemoveGender = useCallback(() => {
-    filters.setState({ gender: '', page: 1 });
+    filters.setState({ gender: [], page: 1 });
   }, [filters]);
 
   const handleReset = useCallback(() => {
     filters.setState({
       name: '',
       status: [],
-      gender: '',
-      category: '',
-      brand: '',
+      gender: [],
+      category: [],
+      brand: [],
       page: 1,
     });
   }, [filters]);
@@ -70,13 +70,9 @@ export function ProductTableFiltersResult({ filters, totalResults, sx }: Props) 
           </Block>
         )}
 
-        {filters.state.gender && (
+        {filters.state.gender.length > 0 && (
           <Block label={t('common.gender')}>
-            <Chip
-              label={filters.state.gender}
-              size="small"
-              onDelete={handleRemoveGender}
-            />
+            <Chip label={filters.state.gender} size="small" onDelete={handleRemoveGender} />
           </Block>
         )}
 

@@ -13,9 +13,9 @@ export type IProductFilters = {
 export type IProductTableFilters = {
   name: string;
   status: string[];
-  category: string;
-  brand: string;
-  gender: string;
+  category: string[];
+  brand: string[];
+  gender: string[];
 };
 
 export type IProductItem = {

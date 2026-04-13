@@ -1,16 +1,17 @@
-import type { GridCellParams } from '@mui/x-data-grid';
-
 import React from 'react';
 import Image from 'next/image';
 
 import Link from '@mui/material/Link';
+import { GridActionsCellItem, type GridCellParams } from '@mui/x-data-grid';
+
 import {
   Box,
+  alpha,
   Stack,
-  MenuItem,
-  MenuList,
+  Button,
+  Divider,
+  Popover,
   Typography,
-  IconButton,
   ListItemText,
 } from '@mui/material';
 
@@ -20,7 +21,7 @@ import { useTranslate } from 'src/locales';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
-import { usePopover, CustomPopover } from 'src/components/custom-popover';
+import { usePopover } from 'src/components/custom-popover';
 
 type ParamsProps = {
   params: GridCellParams;
@@ -127,6 +128,31 @@ export function RenderCellCreatedAt({ params }: ParamsProps) {
   );
 }
 
+export function RenderCellQuantity({ params }: ParamsProps) {
+  return (
+    <Stack spacing={0.5}>
+      <Box component="span">{params.row.quantity}</Box>
+    </Stack>
+  );
+}
+
+export function RenderCellPrice({ params }: ParamsProps) {
+  if (params.row.minPrice === 0 && params.row.maxPrice === 0) return <Box component="span">--</Box>;
+  return (
+    <Stack spacing={0.5}>
+      <Box component="span">
+        {new Intl.NumberFormat('ar-EG', { style: 'currency', currency: 'EGP' }).format(
+          params.row.minPrice
+        )}{' '}
+        -{' '}
+        {new Intl.NumberFormat('ar-EG', { style: 'currency', currency: 'EGP' }).format(
+          params.row.maxPrice
+        )}
+      </Box>
+    </Stack>
+  );
+}
+
 export function RenderCellBrand({ params }: ParamsProps) {
   const { i18n, t } = useTranslate();
   const { brand } = params.row;
@@ -192,71 +218,204 @@ export function RenderCellActions({
   onDeleteRow: () => void;
   onToggleStatus: () => void;
 }) {
-  const { t } = useTranslate();
+  const { t, currentLang } = useTranslate();
   const popover = usePopover();
+  const isActive = params.row.status === 'ACTIVE';
 
   return (
     <>
-      <IconButton color={popover.open ? 'primary' : 'default'} onClick={popover.onOpen}>
-        <Iconify icon="eva:more-vertical-fill" />
-      </IconButton>
-
-      <CustomPopover
-        open={popover.open}
-        anchorEl={popover.anchorEl}
-        onClose={popover.onClose}
-        slotProps={{ arrow: { placement: 'right-top' } }}
+      <Button
+        onClick={popover.onOpen}
+        sx={{ p: 0, aspectRatio: 1, px: 0, height: '48px', minWidth: 'unset' }}
       >
-        <MenuList>
-          <MenuItem
+        <Iconify icon="solar:menu-dots-bold" width={28} sx={{ color: 'text.secondary' }} />
+      </Button>
+
+      <Popover {...popover}>
+        <Stack direction="column" alignItems="center" sx={{ py: 1, width: 1 }}>
+          <GridActionsCellItem
+            showInMenu
+            sx={{ transition: 'all 0.3s ease', width: 1 }}
+            icon={
+              <Stack
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 1,
+                  bgcolor: (theme) => alpha(theme.palette.text.secondary, 0.16),
+                }}
+              >
+                <Iconify icon="solar:eye-bold" width={28} sx={{ color: 'text.secondary' }} />
+              </Stack>
+            }
+            label={
+              (
+                <Stack spacing={0.5} sx={{ width: '100%', alignItems: 'flex-start' }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
+                    }}
+                  >
+                    {t('common.view')}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    {t('common.view_desc')}
+                  </Typography>
+                </Stack>
+              ) as any
+            }
             onClick={() => {
               onViewRow();
               popover.onClose();
             }}
-          >
-            <Iconify icon="solar:eye-bold" />
-            {t('common.view')}
-          </MenuItem>
-
-          <MenuItem
+          />
+          <Divider flexItem />
+          
+          <GridActionsCellItem
+            showInMenu
+            sx={{ transition: 'all 0.3s ease', width: 1 }}
+            icon={
+              <Stack
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 1,
+                  bgcolor: (theme) => alpha(theme.palette.text.secondary, 0.16),
+                }}
+              >
+                <Iconify icon="solar:pen-bold" width={28} sx={{ color: 'text.secondary' }} />
+              </Stack>
+            }
+            label={
+              (
+                <Stack spacing={0.5} sx={{ width: '100%', alignItems: 'flex-start' }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
+                    }}
+                  >
+                    {t('common.edit')}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    {t('common.edit_desc')}
+                  </Typography>
+                </Stack>
+              ) as any
+            }
             onClick={() => {
               onEditRow();
               popover.onClose();
             }}
-          >
-            <Iconify icon="solar:pen-bold" />
-            {t('common.edit')}
-          </MenuItem>
+          />
+          <Divider flexItem />
 
-          <MenuItem
-            onClick={() => {
-              onToggleStatus();
-              popover.onClose();
-            }}
-            sx={{ color: params.row.status === 'ACTIVE' ? 'warning.main' : 'success.main' }}
-          >
-            <Iconify
-              icon={
-                params.row.status === 'ACTIVE'
-                  ? 'solar:close-circle-bold'
-                  : 'solar:check-circle-bold'
-              }
-            />
-            {params.row.status === 'ACTIVE' ? t('common.deactivate') : t('common.activate')}
-          </MenuItem>
-
-          <MenuItem
+          <GridActionsCellItem
+            showInMenu
+            sx={{ transition: 'all 0.3s ease', width: 1 }}
+            icon={
+              <Stack
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 1,
+                  bgcolor: (theme) => alpha(theme.palette.error.main, 0.16),
+                }}
+              >
+                <Iconify
+                  icon="solar:trash-bin-trash-bold"
+                  width={28}
+                  sx={{ color: 'error.main' }}
+                />
+              </Stack>
+            }
+            label={
+              (
+                <Stack spacing={0.5} sx={{ width: '100%', alignItems: 'flex-start' }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'error.main',
+                      fontWeight: 600,
+                      ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
+                    }}
+                  >
+                    {t('common.delete')}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'error.main', opacity: 0.8 }}>
+                    {t('common.delete_desc')}
+                  </Typography>
+                </Stack>
+              ) as any
+            }
             onClick={() => {
               onDeleteRow();
               popover.onClose();
             }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            {t('common.delete')}
-          </MenuItem>
-        </MenuList>
-      </CustomPopover>
+          />
+          <Divider flexItem />
+
+          <GridActionsCellItem
+            showInMenu
+            sx={{ transition: 'all 0.3s ease', width: 1 }}
+            icon={
+              <Stack
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 1,
+                  bgcolor: (theme) =>
+                    alpha(isActive ? theme.palette.warning.main : theme.palette.success.main, 0.16),
+                }}
+              >
+                <Iconify
+                  width={28}
+                  icon={isActive ? 'solar:close-circle-bold' : 'solar:check-circle-bold'}
+                  sx={{ color: isActive ? 'warning.main' : 'success.main' }}
+                />
+              </Stack>
+            }
+            label={
+              (
+                <Stack spacing={0.5} sx={{ width: '100%', alignItems: 'flex-start' }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: isActive ? 'warning.main' : 'success.main',
+                      fontWeight: 800,
+                      ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
+                    }}
+                  >
+                    {isActive ? t('common.deactivate') : t('common.activate')}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: isActive ? 'warning.main' : 'success.main', opacity: 0.8 }}
+                  >
+                    {isActive ? t('common.deactivate_desc') : t('common.activate_desc')}
+                  </Typography>
+                </Stack>
+              ) as any
+            }
+            onClick={() => {
+              onToggleStatus();
+              popover.onClose();
+            }}
+          />
+        </Stack>
+      </Popover>
     </>
   );
 }
+

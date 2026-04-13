@@ -37,6 +37,7 @@ export const productCreationHandler = catchAsync(async (req, res, next) => {
 
 export const getOneProductHandler = catchAsync(async (req, res, next) => {
   const { productId } = req.params;
+
   const product = await ProductsServices.getOneProduct(productId as any);
   res.status(200).json({
     status: "success",
@@ -47,20 +48,29 @@ export const getOneProductHandler = catchAsync(async (req, res, next) => {
 export const getPaginatedProductsHandler = catchAsync(
   async (req, res, next) => {
     const { page = 1, limit = 9, ...filters } = req.query;
+    const locale = (req?.headers?.cookie
+      ?.split(";")
+      .find((cookie) => cookie.trim().startsWith("i18next="))
+      ?.split("=")[1] || "en") as "ar" | "en";
     const products = await ProductsServices.getPaginatedProducts(
       Number(page),
       Number(limit),
       filters as Record<string, string>,
+      locale,
     );
     const productsCount = await ProductsServices.getProductsCount(
       filters as Record<string, string>,
     );
     res.status(200).json({
-      status: "success",
       content: products,
       page: Number(page),
       limit: Number(limit),
       total: productsCount,
+      totalPages: Math.ceil(productsCount / Number(limit)),
+      hasNextPage: Number(page) < Math.ceil(productsCount / Number(limit)),
+      hasPrevPage: Number(page) > 1,
+      isEmpty: products.length === 0,
+      canReset: Number(page) > 1 || Object.keys(filters).length > 0,
     });
   },
 );

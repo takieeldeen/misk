@@ -21,6 +21,7 @@ import {
   GridToolbarColumnsButton,
 } from '@mui/x-data-grid';
 
+import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -42,14 +43,15 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomDataGrid } from 'src/components/custom-datagrid';
 
 import { ProductTableToolbar } from '../table-toolbar';
-import { ProductTableFiltersResult } from '../table-filters-result';
 import {
   RenderCellBrand,
+  RenderCellPrice,
   RenderCellStatus,
   RenderCellGender,
   RenderCellProduct,
   RenderCellActions,
   RenderCellCategory,
+  RenderCellQuantity,
   RenderCellCreatedAt,
 } from '../table-row';
 
@@ -102,11 +104,11 @@ export default function ListView() {
       canReset:
         params.status.length > 0 ||
         params.name.length > 0 ||
-        params.gender !== '' ||
-        params.category !== '' ||
-        params.brand !== '',
+        params.gender.length > 0 ||
+        params.category.length > 0 ||
+        params.brand.length > 0,
       onReset: () => {
-        setParams({ name: '', status: [], gender: '', category: '', brand: '', page: 1 });
+        setParams({ name: '', status: [], gender: [], category: [], brand: [], page: 1 });
       },
     }),
     [params, setParams]
@@ -159,19 +161,15 @@ export default function ListView() {
 
   const handleViewRow = useCallback(
     (id: string) => {
-      // router.push(paths.dashboard.product.details(id));
-      console.log('View row', id);
+      router.push(paths.dashboard.products.catalogDetails(id));
     },
     [router]
   );
 
-  const handleEditRow = useCallback(
-    (id: string) => {
-      // router.push(paths.dashboard.product.edit(id));
-      console.log('Edit row', id);
-    },
-    [router]
-  );
+  const handleEditRow = useCallback((id: string) => {
+    // router.push(paths.dashboard.product.edit(id));
+    console.log('Edit row', id);
+  }, []);
 
   const CustomToolbarCallback = useCallback(
     () => (
@@ -205,6 +203,22 @@ export default function ListView() {
             onViewRow={() => handleViewRow(cellParams.row._id)}
           />
         ),
+      },
+      {
+        field: 'quantity',
+        headerName: t('common.quantity'),
+        width: 110,
+        align: 'center',
+        headerAlign: 'center',
+        renderCell: (cellParams) => <RenderCellQuantity params={cellParams} />,
+      },
+      {
+        field: 'price',
+        headerName: t('common.price'),
+        width: 110,
+        align: 'center',
+        headerAlign: 'center',
+        renderCell: (cellParams) => <RenderCellPrice params={cellParams} />,
       },
       {
         field: 'createdAt',
@@ -317,6 +331,13 @@ export default function ListView() {
             flexDirection: { md: 'column' },
           }}
         >
+          {/* {filters.canReset && (
+            <ProductTableFiltersResult
+              filters={filters as any}
+              totalResults={data?.total || 0}
+              sx={{ p: 2.5, pt: 0 }}
+            />
+          )} */}
           <CustomDataGrid
             onSortModelChange={(model) => {
               if (model.length > 0) {
@@ -356,13 +377,6 @@ export default function ListView() {
             }}
             sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
           />
-          {filters.canReset && (
-            <ProductTableFiltersResult
-              filters={filters as any}
-              totalResults={data?.total || 0}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )}
         </Card>
 
         <Stack

@@ -1,6 +1,7 @@
 import { AppError } from "../../utilities/utilis/error.js";
 import ProductModel from "../../database/models/products.model.js";
 import { ProductCreationDto } from "./products.types.js";
+import { Types } from "mongoose";
 
 export class ProductsServices {
   public static async createProduct(productData: ProductCreationDto) {
@@ -19,13 +20,18 @@ export class ProductsServices {
   public static async getPaginatedProducts(
     page: number = 1,
     limit: number = 9,
-    filters: Record<string, string>
+    filters: Record<string, string>,
+    locale: "ar" | "en" = "en",
   ) {
     const skip = (page - 1) * limit;
-
-    const query: any = {
-      status: filters.status ? filters.status : { $in: ["ACTIVE", "INACTIVE"] },
-    };
+    const finalLocale = `${locale[0].toUpperCase()}${locale.slice(1).toLowerCase()}`;
+    const query: any = {};
+    const sortObj: any = {};
+    if (filters.status) {
+      query.status = {
+        $in: filters.status.split(","),
+      };
+    }
 
     if (filters.name) {
       query.$or = [
@@ -35,30 +41,133 @@ export class ProductsServices {
     }
 
     if (filters.category) {
-      query.category = filters.category;
+      query.category = {
+        $in: filters.category.split(",").map((el) => new Types.ObjectId(el)),
+      };
     }
 
     if (filters.brand) {
-      query.brand = filters.brand;
+      query.brand = {
+        $in: filters.brand.split(",").map((el) => new Types.ObjectId(el)),
+      };
     }
 
     if (filters.gender) {
-      query.gender = filters.gender;
+      query.gender = { $in: filters.gender.split(",") };
     }
 
-    const products = await ProductModel.find(query)
-      .skip(skip > 0 ? skip : 0)
-      .limit(limit)
-      .sort({ createdAt: -1 })
-      .populate("category")
-      .populate("brand");
+    if (filters.sort) {
+      const sortBy = filters?.sort?.[0] === "-" ? -1 : 1;
+      let sortField = filters.sort.startsWith("-")
+        ? filters.sort.slice(1).toLowerCase()
+        : filters.sort.toLowerCase();
+      sortField = sortField === "name" ? "name" + finalLocale : sortField;
+      sortObj[sortField] = sortBy;
+    } else {
+      sortObj.createdAt = -1;
+    }
+    const products = await ProductModel.aggregate([
+      {
+        $match: query,
+      },
+
+      {
+        $skip: skip > 0 ? skip : 0,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                nameAr: 1,
+                nameEn: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: "$category",
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                nameAr: 1,
+                nameEn: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: "$brand",
+      },
+      {
+        $lookup: {
+          from: "productvariants",
+          localField: "_id",
+          foreignField: "product",
+          as: "stock",
+          pipeline: [
+            {
+              $group: {
+                _id: "$product",
+                count: { $sum: "$stock" },
+                minPrice: { $min: "$price" },
+                maxPrice: { $max: "$price" },
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: { path: "$stock", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $addFields: {
+          quantity: { $ifNull: ["$stock.count", 0] },
+          minPrice: { $ifNull: ["$stock.minPrice", 0] },
+          maxPrice: { $ifNull: ["$stock.maxPrice", 0] },
+          price: { $avg: ["$stock.minPrice", "$stock.maxPrice"] },
+        },
+      },
+      {
+        $sort: sortObj,
+      },
+      {
+        $project: {
+          stock: 0,
+          price: 0,
+        },
+      },
+    ]);
+
     return products;
   }
 
   public static async getProductsCount(filters: Record<string, string>) {
-    const query: any = {
-      status: filters.status ? filters.status : { $in: ["ACTIVE", "INACTIVE"] },
-    };
+    const query: any = {};
+
+    if (filters.status) {
+      query.status = {
+        $in: filters.status.split(","),
+      };
+    }
 
     if (filters.name) {
       query.$or = [
@@ -68,15 +177,19 @@ export class ProductsServices {
     }
 
     if (filters.category) {
-      query.category = filters.category;
+      query.category = {
+        $in: filters.category.split(",").map((el) => new Types.ObjectId(el)),
+      };
     }
 
     if (filters.brand) {
-      query.brand = filters.brand;
+      query.brand = {
+        $in: filters.brand.split(",").map((el) => new Types.ObjectId(el)),
+      };
     }
 
     if (filters.gender) {
-      query.gender = filters.gender;
+      query.gender = { $in: filters.gender.split(",") };
     }
 
     const count = await ProductModel.countDocuments(query);
@@ -85,7 +198,7 @@ export class ProductsServices {
 
   public static async updateProduct(
     productId: string,
-    productData: Partial<ProductCreationDto>
+    productData: Partial<ProductCreationDto>,
   ) {
     const product = await ProductModel.findByIdAndUpdate(
       productId,
@@ -93,7 +206,7 @@ export class ProductsServices {
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
     if (!product) throw new AppError(404, "PRODUCT_NOT_FOUND");
     return product;
@@ -112,7 +225,7 @@ export class ProductsServices {
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
     if (!product) throw new AppError(404, "PRODUCT_NOT_FOUND");
     return product;
@@ -125,7 +238,7 @@ export class ProductsServices {
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
     if (!product) throw new AppError(404, "PRODUCT_NOT_FOUND");
     return product;

@@ -170,7 +170,14 @@
     "created_at": "تاريخ الإنشاء",
     "male": "ذكر",
     "female": "أنثى",
-    "neutral": "للجنسين"
+    "neutral": "للجنسين",
+    "quantity": "الكمية",
+    "price": "السعر",
+    "view_desc": "عرض التفاصيل",
+    "edit_desc": "تعديل التفاصيل",
+    "delete_desc": "حذف جميع البيانات المتعلقة بهذا",
+    "activate_desc": "تفعيل ليصبح متاحاً ومتوفراً",
+    "deactivate_desc": "إيقاف بشكل مؤقت"
   },
   "datagrid": {
     "columns": "الأعمدة",
