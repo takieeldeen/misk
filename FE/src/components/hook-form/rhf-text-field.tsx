@@ -36,6 +36,9 @@ export function RHFTextField({ name, helperText, type, ...other }: Props) {
             autoComplete: 'off',
           }}
           {...other}
+          sx={{
+            ...(other.sx ?? {}),
+          }}
         />
       )}
     />

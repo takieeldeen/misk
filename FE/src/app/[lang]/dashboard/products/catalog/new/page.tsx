@@ -1,7 +1,9 @@
 import React from 'react';
 
+import ProductNewEditForm from 'src/sections/products-catalog/new-edit-form';
+
 function ProductCreationPage() {
-  return <div>ProductCreationPage</div>;
+  return <ProductNewEditForm />;
 }
 
 export default ProductCreationPage;

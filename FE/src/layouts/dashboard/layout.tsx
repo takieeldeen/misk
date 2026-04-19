@@ -99,7 +99,7 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
             borderWidth: 0,
             borderBottomWidth: 1,
             borderStyle: 'solid',
-            borderColor: 'grey.300',
+            borderColor: settings.colorScheme === 'dark' ? 'grey.700' : 'grey.300',
           }}
           slots={{
             topArea: (
