@@ -3,6 +3,7 @@ import type { IconButtonProps } from '@mui/material/IconButton';
 import SvgIcon from '@mui/material/SvgIcon';
 import IconButton from '@mui/material/IconButton';
 
+import { useTranslate } from 'src/locales';
 import { varAlpha } from 'src/theme/styles';
 
 // ----------------------------------------------------------------------
@@ -12,12 +13,13 @@ export type NavToggleButtonProps = IconButtonProps & {
 };
 
 export function NavToggleButton({ isNavMini, sx, ...other }: NavToggleButtonProps) {
+  const { i18n } = useTranslate();
   return (
     <IconButton
       size="small"
       sx={{
         p: 0.5,
-        top: 24,
+        top: 56,
         position: 'fixed',
         color: 'action.active',
         bgcolor: 'background.default',
@@ -42,6 +44,7 @@ export function NavToggleButton({ isNavMini, sx, ...other }: NavToggleButtonProp
         sx={{
           width: 16,
           height: 16,
+          rotate: i18n.language === 'ar' ? '180deg' : '0deg',
           ...(isNavMini && {
             transform: 'scaleX(-1)',
           }),

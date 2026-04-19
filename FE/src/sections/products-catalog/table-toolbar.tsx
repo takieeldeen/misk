@@ -39,9 +39,9 @@ const STATUS_OPTIONS = [
 ];
 
 const GENDER_OPTIONS = [
-  { id: 1, nameAr: 'ذكر', nameEn: 'Male', value: 'MALE' },
-  { id: 2, nameAr: 'أنثى', nameEn: 'Female', value: 'FEMALE' },
-  { id: 3, nameAr: 'للجنسين', nameEn: 'Neutral', value: 'NEUTRAL' },
+  { id: 1, nameAr: 'ذكوري', nameEn: 'For Men', value: 'MALE' },
+  { id: 2, nameAr: 'انثوي', nameEn: 'For Women', value: 'FEMALE' },
+  { id: 3, nameAr: 'محايد', nameEn: 'Unisex', value: 'NEUTRAL' },
 ];
 
 type Props = {

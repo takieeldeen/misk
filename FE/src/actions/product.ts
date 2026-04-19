@@ -68,7 +68,7 @@ export const prefetchProduct = cache(async (id: string) => {
   const URL: [string, AxiosRequestConfig] = [endpoints.product.details(id), {}];
   const queryKey = ['product', 'details', id];
   const queryClient = new QueryClient();
-  const query = await queryClient.prefetchQuery<IProductItem>({
+  const query = await queryClient.prefetchQuery<APIDetailsResponse<IProductItem>>({
     queryKey,
     queryFn: getFetcher(URL),
   });

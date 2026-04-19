@@ -10,6 +10,8 @@ import IconButton from '@mui/material/IconButton';
 
 import { varHover, AnimateAvatar } from 'src/components/animate';
 
+import { useAuthContext } from 'src/auth/hooks';
+
 // ----------------------------------------------------------------------
 
 export type AccountButtonProps = IconButtonProps & {
@@ -19,7 +21,8 @@ export type AccountButtonProps = IconButtonProps & {
 
 export function AccountButton({ photoURL, displayName, sx, ...other }: AccountButtonProps) {
   const theme = useTheme();
-
+  const { user } = useAuthContext();
+  console.log(user);
   const renderFallback = (
     <Avatar
       sx={{
@@ -51,7 +54,7 @@ export function AccountButton({ photoURL, displayName, sx, ...other }: AccountBu
       <NoSsr fallback={renderFallback}>
         <AnimateAvatar
           slotProps={{
-            avatar: { src: photoURL, alt: displayName },
+            avatar: { src: user?.imageUrl ? user.imageUrl : photoURL, alt: displayName },
             overlay: {
               border: 1,
               spacing: 2,

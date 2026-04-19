@@ -1,4 +1,8 @@
-import { ProductCreationDto, ProductInfoDto, ProductType } from "./products.types.js";
+import {
+  ProductCreationDto,
+  ProductInfoDto,
+  ProductType,
+} from "./products.types.js";
 
 export function createProductCreationDto(body: any): ProductCreationDto {
   return {
@@ -9,6 +13,7 @@ export function createProductCreationDto(body: any): ProductCreationDto {
     gender: body?.gender || "NEUTRAL",
     category: body?.category,
     brand: body?.brand,
+    content: body?.content,
   };
 }
 

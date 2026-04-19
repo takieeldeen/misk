@@ -7,6 +7,7 @@ export interface ReviewType {
   product: string | ProductType;
   rating: number;
   comment?: string;
+  verifiedPurchase?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

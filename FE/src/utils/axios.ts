@@ -70,6 +70,9 @@ export const endpoints = {
     search: '/products/search',
     activate: (id: string) => `/products/${id}/activate`,
     deactivate: (id: string) => `/products/${id}/deactivate`,
+    reviews: (id: string) => `/products/${id}/reviews`,
+    ratings: (id: string) => `/products/${id}/ratings`,
+    reviewDetails: (productId: string, reviewId: string) => `/products/${productId}/reviews/${reviewId}`,
   },
   brand: {
     list: '/brands',

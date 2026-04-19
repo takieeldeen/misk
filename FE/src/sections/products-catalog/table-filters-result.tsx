@@ -32,9 +32,30 @@ export function ProductTableFiltersResult({ filters, totalResults, sx }: Props) 
     [filters]
   );
 
-  const handleRemoveGender = useCallback(() => {
-    filters.setState({ gender: [], page: 1 });
-  }, [filters]);
+  const handleRemoveGender = useCallback(
+    (inputValue: string) => {
+      const newValue = filters.state.gender.filter((item) => item !== inputValue);
+      filters.setState({ gender: newValue, page: 1 });
+    },
+    [filters]
+  );
+
+  const handleRemoveCategory = useCallback(
+    (inputValue: string) => {
+      const newValue = filters.state.category.filter((item) => item !== inputValue);
+      filters.setState({ category: newValue, page: 1 });
+    },
+    [filters]
+  );
+
+  const handleRemoveBrand = useCallback(
+    (inputValue: string) => {
+      const newValue = filters.state.brand.filter((item) => item !== inputValue);
+      filters.setState({ brand: newValue, page: 1 });
+    },
+    [filters]
+  );
+
 
   const handleReset = useCallback(() => {
     filters.setState({
@@ -70,11 +91,45 @@ export function ProductTableFiltersResult({ filters, totalResults, sx }: Props) 
           </Block>
         )}
 
-        {filters.state.gender.length > 0 && (
+        {!!filters.state.gender.length && (
           <Block label={t('common.gender')}>
-            <Chip label={filters.state.gender} size="small" onDelete={handleRemoveGender} />
+            {filters.state.gender.map((item) => (
+              <Chip
+                key={item}
+                label={t(`common.${item.toLowerCase()}`)}
+                size="small"
+                onDelete={() => handleRemoveGender(item)}
+              />
+            ))}
           </Block>
         )}
+
+        {!!filters.state.category.length && (
+          <Block label={t('common.category')}>
+            {filters.state.category.map((item) => (
+              <Chip
+                key={item}
+                label={item}
+                size="small"
+                onDelete={() => handleRemoveCategory(item)}
+              />
+            ))}
+          </Block>
+        )}
+
+        {!!filters.state.brand.length && (
+          <Block label={t('common.brand')}>
+            {filters.state.brand.map((item) => (
+              <Chip
+                key={item}
+                label={item}
+                size="small"
+                onDelete={() => handleRemoveBrand(item)}
+              />
+            ))}
+          </Block>
+        )}
+
 
         <Button
           color="error"

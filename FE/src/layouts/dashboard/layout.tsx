@@ -22,7 +22,7 @@ import { NavVertical } from './nav-vertical';
 import { NavHorizontal } from './nav-horizontal';
 import { _account } from '../config-nav-account';
 import { Searchbar } from '../components/searchbar';
-import { _workspaces } from '../config-nav-workspace';
+import { useNavData } from '../config-nav-dashboard';
 import { MenuButton } from '../components/menu-button';
 import { LayoutSection } from '../core/layout-section';
 import { HeaderSection } from '../core/header-section';
@@ -31,8 +31,6 @@ import { AccountDrawer } from '../components/account-drawer';
 import { SettingsButton } from '../components/settings-button';
 import { LanguagePopover } from '../components/language-popover';
 import { ContactsPopover } from '../components/contacts-popover';
-import { WorkspacesPopover } from '../components/workspaces-popover';
-import { useNavData } from '../config-nav-dashboard';
 import { NotificationsDrawer } from '../components/notifications-drawer';
 
 // ----------------------------------------------------------------------
@@ -96,7 +94,13 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
               },
             },
           }}
-          sx={header?.sx}
+          sx={{
+            ...(header?.sx ?? {}),
+            borderWidth: 0,
+            borderBottomWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'grey.300',
+          }}
           slots={{
             topArea: (
               <Alert severity="info" sx={{ display: 'none', borderRadius: 0 }}>
@@ -143,10 +147,10 @@ export function DashboardLayout({ sx, children, header, data }: DashboardLayoutP
                   />
                 )}
                 {/* -- Workspace popover -- */}
-                <WorkspacesPopover
+                {/* <WorkspacesPopover
                   data={_workspaces}
                   sx={{ color: 'var(--layout-nav-text-primary-color)' }}
-                />
+                /> */}
               </>
             ),
             rightArea: (

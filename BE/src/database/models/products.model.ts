@@ -17,6 +17,7 @@ const productSchema = new Schema<ProductType>(
     descriptionEn: {
       type: String,
     },
+    content: String,
     status: {
       type: String,
       enum: ["ACTIVE", "INACTIVE"],
@@ -40,7 +41,7 @@ const productSchema = new Schema<ProductType>(
       default: [],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const ProductModel = model<ProductType>("Product", productSchema);

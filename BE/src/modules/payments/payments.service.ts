@@ -74,7 +74,9 @@ export class PaymentService {
           name: itemName,
           amount: item.unitPriceInCents,
           description:
-            product.descriptionEn || product.descriptionAr || itemName,
+            product.descriptionEn?.substring(0, 100) ||
+            product.descriptionAr?.substring(0, 100) ||
+            itemName,
           quantity: item.quantity,
           image: product.images?.[0],
         };

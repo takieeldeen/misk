@@ -16,9 +16,95 @@ export class ReviewService {
   }
 
   public static async getProductReviews(productId: string) {
-    const reviews = await ReviewModel.find({ product: productId }).sort({
-      createdAt: -1,
-    });
+    const reviews = await ReviewModel.aggregate([
+      {
+        $match: {
+          product: new mongoose.Types.ObjectId(productId),
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                email: 1,
+                imageUrl: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $lookup: {
+          from: "orderitems",
+          let: { reviewerId: "$user._id" },
+          pipeline: [
+            {
+              $lookup: {
+                from: "orders",
+                localField: "order",
+                foreignField: "_id",
+                as: "orderInfo",
+              },
+            },
+            { $unwind: "$orderInfo" },
+            {
+              $lookup: {
+                from: "productvariants",
+                localField: "variant",
+                foreignField: "_id",
+                as: "variantInfo",
+              },
+            },
+            { $unwind: "$variantInfo" },
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$orderInfo.user", "$$reviewerId"] },
+                    { $eq: ["$orderInfo.status", "PAID"] },
+                    {
+                      $eq: [
+                        "$variantInfo.product",
+                        new mongoose.Types.ObjectId(productId),
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+            { $limit: 1 },
+          ],
+          as: "verifiedPurchaseOrder",
+        },
+      },
+      {
+        $addFields: {
+          verifiedPurchase: {
+            $gt: [{ $size: "$verifiedPurchaseOrder" }, 0],
+          },
+        },
+      },
+      {
+        $project: {
+          verifiedPurchaseOrder: 0,
+        },
+      },
+    ]);
     return reviews;
   }
 

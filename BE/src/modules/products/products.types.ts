@@ -13,6 +13,8 @@ export interface ProductType {
   brand?: string | BrandType;
   images?: string[];
   createdAt: Date;
+  content?: string;
+
   updatedAt: Date;
 }
 
@@ -24,6 +26,7 @@ export interface ProductCreationDto {
   gender: "MALE" | "FEMALE" | "NEUTRAL";
   category?: string;
   brand?: string;
+  content?: string;
   images?: string[];
 }
 

@@ -6,6 +6,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
+import { useTranslate } from 'src/locales';
+
 import type { ConfirmDialogProps } from './types';
 
 // ----------------------------------------------------------------------
@@ -20,6 +22,7 @@ export function ConfirmDialog({
   onClose,
   ...other
 }: ConfirmDialogProps) {
+  const { t } = useTranslate();
   return (
     <Dialog
       fullWidth
@@ -36,11 +39,7 @@ export function ConfirmDialog({
         },
       }}
     >
-      {icon && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', pt: 4, pb: 2 }}>
-          {icon}
-        </Box>
-      )}
+      {icon && <Box sx={{ display: 'flex', justifyContent: 'center', pt: 4, pb: 2 }}>{icon}</Box>}
 
       <DialogTitle sx={{ pb: 2, pt: icon ? 0 : undefined, textAlign: icon ? 'center' : 'left' }}>
         {title}
@@ -64,7 +63,7 @@ export function ConfirmDialog({
         {action}
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          {cancelLabel || 'Cancel'}
+          {cancelLabel || t('common.CANCEL')}
         </Button>
       </DialogActions>
     </Dialog>

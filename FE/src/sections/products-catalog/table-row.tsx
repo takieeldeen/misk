@@ -3,7 +3,6 @@ import Image from 'next/image';
 
 import Link from '@mui/material/Link';
 import { GridActionsCellItem, type GridCellParams } from '@mui/x-data-grid';
-
 import {
   Box,
   alpha,
@@ -169,37 +168,41 @@ export function RenderCellBrand({ params }: ParamsProps) {
 export function RenderCellGender({ params }: ParamsProps) {
   const { t } = useTranslate();
   const { gender } = params.row;
-  const genderColor: Record<string, string> = {
-    MALE: '#14b8a6',
-    FEMALE: '#ec4899',
-    NEUTRAL: '#f59e0b',
-  };
 
-  const genderIcon: Record<string, string> = {
-    MALE: 'mdi:gender-male',
-    FEMALE: 'ph:gender-female-bold',
-    NEUTRAL: 'bi:gender-ambiguous',
-  };
   return (
-    // <Label variant="soft" color={genderColor[gender]}>
-    //   {t(`common.${gender.toLowerCase()}`)}
-    // </Label>
     <Box
       sx={{
-        px: 2,
-        borderRadius: 999,
+        px: 1,
+        borderRadius: 1,
         py: 0.5,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 1,
-        bgcolor: genderColor[gender],
-        color: 'black',
-        minWidth: 100,
+        gap: 0.75,
+        bgcolor: (theme) =>
+          (gender === 'MALE' && alpha(theme.palette.info.main, 0.16)) ||
+          (gender === 'FEMALE' && alpha(theme.palette.error.main, 0.16)) ||
+          alpha(theme.palette.warning.main, 0.16),
+        color: (theme) =>
+          (gender === 'MALE' && theme.palette.info.main) ||
+          (gender === 'FEMALE' && theme.palette.error.main) ||
+          (theme.palette.mode === 'light'
+            ? theme.palette.warning.dark
+            : theme.palette.warning.main),
+        minWidth: 80,
       }}
     >
-      <Iconify icon={genderIcon[gender]} width={20} />
-      <Typography sx={{ fontSize: 12, textTransform: 'capitalize', fontWeight: 700 }}>
+      <Iconify
+        icon={
+          (gender === 'MALE' && 'mdi:gender-male') ||
+          (gender === 'FEMALE' && 'ph:gender-female-bold') ||
+          'bi:gender-ambiguous'
+        }
+        width={16}
+      />
+      <Typography
+        sx={{ fontSize: 12, textTransform: 'capitalize', fontWeight: 700, whiteSpace: 'nowrap' }}
+      >
         {t(`common.${gender.toLowerCase()}`)}
       </Typography>
     </Box>
@@ -232,49 +235,7 @@ export function RenderCellActions({
       </Button>
 
       <Popover {...popover}>
-        <Stack direction="column" alignItems="center" sx={{ py: 1, width: 1 }}>
-          <GridActionsCellItem
-            showInMenu
-            sx={{ transition: 'all 0.3s ease', width: 1 }}
-            icon={
-              <Stack
-                alignItems="center"
-                justifyContent="center"
-                sx={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 1,
-                  bgcolor: (theme) => alpha(theme.palette.text.secondary, 0.16),
-                }}
-              >
-                <Iconify icon="solar:eye-bold" width={28} sx={{ color: 'text.secondary' }} />
-              </Stack>
-            }
-            label={
-              (
-                <Stack spacing={0.5} sx={{ width: '100%', alignItems: 'flex-start' }}>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontWeight: 600,
-                      ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
-                    }}
-                  >
-                    {t('common.view')}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    {t('common.view_desc')}
-                  </Typography>
-                </Stack>
-              ) as any
-            }
-            onClick={() => {
-              onViewRow();
-              popover.onClose();
-            }}
-          />
-          <Divider flexItem />
-          
+        <Stack direction="column" alignItems="center" sx={{ py: 1, width: 1, minWidth: 300 }}>
           <GridActionsCellItem
             showInMenu
             sx={{ transition: 'all 0.3s ease', width: 1 }}
@@ -298,14 +259,18 @@ export function RenderCellActions({
                   <Typography
                     variant="body2"
                     sx={{
-                      fontWeight: 600,
+                      fontWeight: 700,
                       ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
                     }}
                   >
-                    {t('common.edit')}
+                    {t('common.UPDATE_ENTITY_TITLE', {
+                      entity: t('PRODUCTS.DEFINITE_ENTITY_NAME'),
+                    })}
                   </Typography>
                   <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    {t('common.edit_desc')}
+                    {t('common.UPDATE_ENTITY_DESC', {
+                      entity: t('PRODUCTS.INDEFINITE_ENTITY_NAME'),
+                    })}
                   </Typography>
                 </Stack>
               ) as any
@@ -345,14 +310,18 @@ export function RenderCellActions({
                     variant="body2"
                     sx={{
                       color: 'error.main',
-                      fontWeight: 600,
+                      fontWeight: 700,
                       ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
                     }}
                   >
-                    {t('common.delete')}
+                    {t('common.DELETE_ENTITY_TITLE', {
+                      entity: t('PRODUCTS.DEFINITE_ENTITY_NAME'),
+                    })}
                   </Typography>
                   <Typography variant="caption" sx={{ color: 'error.main', opacity: 0.8 }}>
-                    {t('common.delete_desc')}
+                    {t('common.DELETE_ENTITY_DESC', {
+                      entity: t('PRODUCTS.INDEFINITE_ENTITY_NAME'),
+                    })}
                   </Typography>
                 </Stack>
               ) as any
@@ -393,17 +362,29 @@ export function RenderCellActions({
                     variant="body2"
                     sx={{
                       color: isActive ? 'warning.main' : 'success.main',
-                      fontWeight: 800,
+                      fontWeight: 700,
                       ...(currentLang.value === 'ar' && { fontFamily: 'Cairo' }),
                     }}
                   >
-                    {isActive ? t('common.deactivate') : t('common.activate')}
+                    {isActive
+                      ? t('common.DEACTIVATE_ENTITY_TITLE', {
+                          entity: t('PRODUCTS.DEFINITE_ENTITY_NAME'),
+                        })
+                      : t('common.ACTIVATE_ENTITY_TITLE', {
+                          entity: t('PRODUCTS.DEFINITE_ENTITY_NAME'),
+                        })}
                   </Typography>
                   <Typography
                     variant="caption"
                     sx={{ color: isActive ? 'warning.main' : 'success.main', opacity: 0.8 }}
                   >
-                    {isActive ? t('common.deactivate_desc') : t('common.activate_desc')}
+                    {isActive
+                      ? t('common.DEACTIVATE_ENTITY_DESC', {
+                          entity: t('PRODUCTS.INDEFINITE_ENTITY_NAME'),
+                        })
+                      : t('common.ACTIVATE_ENTITY_DESC', {
+                          entity: t('PRODUCTS.INDEFINITE_ENTITY_NAME'),
+                        })}
                   </Typography>
                 </Stack>
               ) as any
@@ -418,4 +399,3 @@ export function RenderCellActions({
     </>
   );
 }
-

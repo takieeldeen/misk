@@ -10,9 +10,136 @@ export class ProductsServices {
   }
 
   public static async getOneProduct(productId: string) {
-    const product = await ProductModel.findById(productId)
-      .populate("category")
-      .populate("brand");
+    // const product = await ProductModel.findById(productId)
+    //   .populate("category")
+    //   .populate("brand");
+    const [product] = await ProductModel.aggregate([
+      {
+        $match: {
+          _id: new Types.ObjectId(productId),
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                nameAr: 1,
+                nameEn: 1,
+                imageUrl: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: "$category",
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                nameAr: 1,
+                nameEn: 1,
+                imageUrl: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: "$brand",
+      },
+      {
+        $lookup: {
+          from: "productvariants",
+          localField: "_id",
+          foreignField: "product",
+          as: "variants",
+          pipeline: [
+            {
+              $addFields: {
+                stockStatus: {
+                  $switch: {
+                    branches: [
+                      {
+                        case: { $lte: ["$stock", 0] },
+                        then: "OUT_OF_STOCK",
+                      },
+                      {
+                        case: { $lt: ["$stock", 10] },
+                        then: "LOW_STOCK",
+                      },
+                    ],
+                    default: "IN_STOCK",
+                  },
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                sizeMl: 1,
+                price: 1,
+                stock: 1,
+                status: 1,
+                stockStatus: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "reviews",
+          localField: "_id",
+          foreignField: "product",
+          as: "reviews",
+          pipeline: [
+            {
+              $group: {
+                _id: "$product",
+                count: { $sum: 1 },
+                avgRating: { $avg: "$rating" },
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                count: 1,
+                avgRating: 1,
+              },
+            },
+          ],
+        },
+      },
+
+      {
+        $addFields: {
+          reviews: {
+            $cond: {
+              if: { $eq: [{ $size: "$reviews" }, 0] },
+              then: {
+                count: 0,
+                avgRating: 0,
+              },
+              else: { $arrayElemAt: ["$reviews", 0] },
+            },
+          },
+        },
+      },
+    ]);
     if (!product) throw new AppError(404, "PRODUCT_NOT_FOUND");
     return product;
   }
@@ -71,12 +198,6 @@ export class ProductsServices {
         $match: query,
       },
 
-      {
-        $skip: skip > 0 ? skip : 0,
-      },
-      {
-        $limit: limit,
-      },
       {
         $lookup: {
           from: "categories",
@@ -148,6 +269,12 @@ export class ProductsServices {
       },
       {
         $sort: sortObj,
+      },
+      {
+        $skip: skip > 0 ? skip : 0,
+      },
+      {
+        $limit: limit,
       },
       {
         $project: {

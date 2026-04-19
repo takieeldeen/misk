@@ -30,13 +30,27 @@ export type IProductItem = {
     _id: string;
     nameAr: string;
     nameEn: string;
+    imageUrl: string;
   };
   brand?: {
     _id: string;
     nameAr: string;
     nameEn: string;
+    imageUrl: string;
   };
   images: string[];
+  variants: {
+    _id: string;
+    sizeMl: number;
+    status: 'ACTIVE' | 'INACTIVE';
+    stockStatus: 'IN_STOCK' | 'OUT_OF_STOCK' | 'LOW_STOCK';
+    price: number;
+    stock: number;
+  }[];
+  reviews: {
+    count: number;
+    avgRating: number;
+  };
   createdAt: IDateValue;
   updatedAt: IDateValue;
 };

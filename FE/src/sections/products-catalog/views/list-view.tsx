@@ -43,6 +43,8 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomDataGrid } from 'src/components/custom-datagrid';
 
 import { ProductTableToolbar } from '../table-toolbar';
+import { ProductTableFiltersResult } from '../table-filters-result';
+
 import {
   RenderCellBrand,
   RenderCellPrice,
@@ -331,13 +333,13 @@ export default function ListView() {
             flexDirection: { md: 'column' },
           }}
         >
-          {/* {filters.canReset && (
+          {filters.canReset && (
             <ProductTableFiltersResult
               filters={filters as any}
               totalResults={data?.total || 0}
               sx={{ p: 2.5, pt: 0 }}
             />
-          )} */}
+          )}
           <CustomDataGrid
             onSortModelChange={(model) => {
               if (model.length > 0) {
@@ -406,8 +408,12 @@ export default function ListView() {
       <ConfirmDialog
         open={confirmDeleteRow.value}
         onClose={confirmDeleteRow.onFalse}
-        title={t('common.delete')}
-        content={t('common.delete_confirm_single')}
+        title={t('common.DELETE_CONFIRMATION_TITLE', {
+          entity: t('common.product'),
+        })}
+        content={t('common.DELETE_CONFIRMATION_DESC', {
+          entity: t('common.product'),
+        })}
         action={
           <Button
             variant="contained"
@@ -425,8 +431,24 @@ export default function ListView() {
       <ConfirmDialog
         open={confirmToggleStatus.value}
         onClose={confirmToggleStatus.onFalse}
-        title={actionRow?.status === 'ACTIVE' ? t('common.deactivate') : t('common.activate')}
-        content={t('common.status_confirm')}
+        title={
+          actionRow?.status === 'ACTIVE'
+            ? t('common.DEACTIVATION_CONFIRMATION_TITLE', {
+                entity: t('common.product'),
+              })
+            : t('common.ACTIVATION_CONFIRMATION_TITLE', {
+                entity: t('common.product'),
+              })
+        }
+        content={
+          actionRow?.status === 'ACTIVE'
+            ? t('common.DEACTIVATION_CONFIRMATION_DESC', {
+                entity: t('common.product'),
+              })
+            : t('common.ACTIVATION_CONFIRMATION_DESC', {
+                entity: t('common.product'),
+              })
+        }
         action={
           <Button
             variant="contained"
