@@ -215,3 +215,13 @@ export function useDeactivateBrand() {
     },
   });
 }
+
+export function useGetBrandsValueHelp() {
+  const URL = endpoints.brand.valueHelp;
+  const queryKey = ['brand', 'value-help'];
+  const query = useQuery<APIDetailsResponse<IBrandItem[]>>({
+    queryKey,
+    queryFn: getFetcher(URL),
+  });
+  return { ...query, queryKey };
+}

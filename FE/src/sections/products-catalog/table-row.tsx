@@ -136,17 +136,21 @@ export function RenderCellQuantity({ params }: ParamsProps) {
 }
 
 export function RenderCellPrice({ params }: ParamsProps) {
+  const { i18n } = useTranslate();
   if (params.row.minPrice === 0 && params.row.maxPrice === 0) return <Box component="span">--</Box>;
   return (
     <Stack spacing={0.5}>
-      <Box component="span">
-        {new Intl.NumberFormat('ar-EG', { style: 'currency', currency: 'EGP' }).format(
-          params.row.minPrice
-        )}{' '}
-        -{' '}
-        {new Intl.NumberFormat('ar-EG', { style: 'currency', currency: 'EGP' }).format(
-          params.row.maxPrice
-        )}
+      <Box component="span" sx={{ fontWeight: 600 }}>
+        {new Intl.NumberFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
+          style: 'currency',
+          currency: 'EGP',
+        }).format(params.row.minPrice)}{' '}
+        {params.row.maxPrice === params.row.minPrice
+          ? null
+          : ` - ${new Intl.NumberFormat(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
+              style: 'currency',
+              currency: 'EGP',
+            }).format(params.row.maxPrice)}`}
       </Box>
     </Stack>
   );

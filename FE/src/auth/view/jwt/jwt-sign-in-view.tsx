@@ -21,9 +21,10 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useTranslate } from 'src/locales';
 
 import { toast } from 'src/components/snackbar';
+import { Form } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
 import { AnimateLogo2 } from 'src/components/animate';
-import { Form, RHFTextField } from 'src/components/hook-form';
+import RHFTextField from 'src/components/hook-form/rhf-text-field';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { signInWithPassword } from 'src/auth/context/jwt';

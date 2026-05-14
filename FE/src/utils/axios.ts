@@ -81,6 +81,7 @@ export const endpoints = {
     deleteMany: '/brands/delete-many',
     activate: (id: string) => `/brands/${id}/activate`,
     deactivate: (id: string) => `/brands/${id}/deactivate`,
+    valueHelp: '/brands/value-help',
   },
   category: {
     list: '/categories',
@@ -89,5 +90,6 @@ export const endpoints = {
     deleteMany: '/categories/delete-many',
     activate: (id: string) => `/categories/${id}/activate`,
     deactivate: (id: string) => `/categories/${id}/deactivate`,
+    valueHelp: '/categories/value-help',
   },
 };

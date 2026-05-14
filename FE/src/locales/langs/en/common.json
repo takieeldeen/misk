@@ -163,8 +163,10 @@
     "status_error": "An error occurred while updating category status"
   },
   "common": {
+    "PAGE_NOT_FOUND_TITLE": "Sorry, page not found!",
+    "PAGE_NOT_FOUND_DESC": "Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped the URL? Be sure to check your spelling.",
     "SIZE_ML": "{{size}} ml",
-
+    "BACK_TO_HOME": "Back to Home",
     "IN_STOCK": "In Stock",
     "LOW_STOCK": "Low Stock",
     "OUT_OF_STOCK": "Out of Stock",
@@ -235,6 +237,37 @@
     "DELETE_PRODUCT_SUCCESS": "Product deleted successfully",
     "DELETE_PRODUCT_ERROR": "Failed to delete product"
   },
+  "catalog": {
+    "new_product": "New Product",
+    "basic_info": "Basic Information",
+    "basic_info_desc": "Title, short description, images...",
+    "name_ar": "Product Name in Arabic",
+    "name_en": "Product Name in English",
+    "name_ar_placeholder": "Enter product name in Arabic",
+    "name_en_placeholder": "Enter product name in English",
+    "description_ar": "Arabic Description",
+    "description_en": "English Description",
+    "description_ar_placeholder": "Enter description in Arabic",
+    "description_en_placeholder": "Enter description in English",
+    "content": "Content",
+    "contentAr": "Content in Arabic",
+    "contentEn": "Content in English",
+
+    "images": "Images",
+    "properties": "Product Properties",
+    "properties_desc": "Brand, category, gender, ...",
+    "gender": "Gender",
+    "category": "Category",
+    "brand": "Brand",
+    "status": "Status",
+    "variants": "Product Variants",
+    "variants_desc": "Product sizes, prices and stock.",
+    "size_in_ml": "Size In ml",
+    "price": "Price",
+    "stock": "Stock",
+    "add_variant": "Add Variant",
+    "remove_variant": "Remove Variant"
+  },
   "datagrid": {
     "columns": "Columns",
     "filters": "Filters",
@@ -268,5 +301,21 @@
     "update_photo": "Update photo",
     "upload_photo": "Upload photo",
     "invalid_size": "File is too large. Max size is {{size}}"
+  },
+  "VALIDATIONS": {
+    "COMMON": {
+      "LETTERS_AND_NUMBERS": "{{field}} must only consists of letters and numbers.",
+      "REQUIRED": "Please enter {{field}}.",
+      "MAX_LENGTH": "Maximum Number of characters is {{length}} character.",
+      "POSITIVE": "Please enter a positive value.",
+      "MIN_VALUE": "Minimum Value for {{field}} is {{value}}.",
+      "MAX_VALUE": "Maximum Value for {{field}} is {{value}}.",
+      "MIN_ARRAY_LENGTH": "Please Choose at least one {{field}}.",
+      "FUTURE_DATE": "{{field}} must be set to a date in the future.",
+      "PAST_DATE": "{{field}} cant't be in the future.",
+      "YOU_HAVE_N_ERRORS_LONG": "You have ( {{n}} ) errors",
+      "YOU_HAVE_N_ERRORS_SHORT": "( {{n}} )",
+      "INVALID_EMAIL": "Please enter a valid email address."
+    }
   }
 }

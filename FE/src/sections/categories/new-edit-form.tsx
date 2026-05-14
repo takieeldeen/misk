@@ -20,9 +20,10 @@ import { useTranslate } from 'src/locales';
 import { useCreateCategory, useUpdateCategory } from 'src/actions/category';
 
 import { toast } from 'src/components/snackbar';
+import { Form } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
-import { Form, RHFTextField } from 'src/components/hook-form';
 import { RHFUpload } from 'src/components/hook-form/rhf-upload';
+import RHFTextField from 'src/components/hook-form/rhf-text-field';
 
 export interface NewEditProps extends ButtonProps {
   open?: boolean;

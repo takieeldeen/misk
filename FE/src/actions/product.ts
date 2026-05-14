@@ -71,6 +71,7 @@ export const prefetchProduct = cache(async (id: string) => {
   const query = await queryClient.prefetchQuery<APIDetailsResponse<IProductItem>>({
     queryKey,
     queryFn: getFetcher(URL),
+    retry: 1,
   });
   return { queryClient, query, queryKey };
 });
@@ -124,12 +125,15 @@ export function useGetProducts({
 }
 
 export function useGetProduct(id: string) {
+  console.log('prefetched once');
+
   const URL: [string, AxiosRequestConfig] = [endpoints.product.details(id), {}];
   const queryKey = ['product', 'details', id];
   const query = useQuery<APIDetailsResponse<IProductItem>>({
     queryKey,
     queryFn: getFetcher(URL),
     enabled: !!id,
+    retry: 0,
   });
   return { ...query, queryKey };
 }
@@ -144,9 +148,13 @@ export function useCreateProduct() {
       formData.append('nameEn', data.nameEn);
       formData.append('descriptionAr', data.descriptionAr);
       formData.append('descriptionEn', data.descriptionEn);
-      formData.append('gender', data.gender);
-      formData.append('category', data.category);
-      formData.append('brand', data.brand);
+      formData.append('gender', data.gender?.value);
+      formData.append('category', data.category?._id);
+      formData.append('brand', data.brand?._id);
+      formData.append('contentAr', data.contentAr);
+      formData.append('contentEn', data.contentEn);
+      formData.append('status', data.status?.value);
+      formData.append('variants', JSON.stringify(data.variants));
 
       if (data.images && data.images.length > 0) {
         data.images.forEach((image: File) => {

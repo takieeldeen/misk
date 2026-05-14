@@ -67,6 +67,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/products`,
       catalog: `${ROOTS.DASHBOARD}/products/catalog`,
       catalogDetails: (id: string) => `${ROOTS.DASHBOARD}/products/catalog/${id}`,
+      catalogNew: `${ROOTS.DASHBOARD}/products/catalog/new`,
       variants: `${ROOTS.DASHBOARD}/products/variants`,
     },
     product: {

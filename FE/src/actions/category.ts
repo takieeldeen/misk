@@ -217,3 +217,13 @@ export function useDeactivateCategory() {
     },
   });
 }
+
+export function useGetCategoriesValueHelp() {
+  const URL = endpoints.category.valueHelp;
+  const queryKey = ['category', 'value-help'];
+  const query = useQuery<APIDetailsResponse<ICategoryItem[]>>({
+    queryKey,
+    queryFn: getFetcher(URL),
+  });
+  return { ...query, queryKey };
+}

@@ -1,7 +1,7 @@
 import type { IProductItem } from 'src/types/product';
 import type { APIDetailsResponse } from 'src/types/common';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
 import { prefetchProduct } from 'src/actions/product';
@@ -31,9 +31,11 @@ async function ProductDetailsPage({ params }: { params: { productId: string } })
   const { queryClient } = await prefetchProduct(params.productId);
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProductDetailsView />
-    </HydrationBoundary>
+    <Suspense fallback={<div>Loading...</div>}>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <ProductDetailsView />
+      </HydrationBoundary>
+    </Suspense>
   );
 }
 

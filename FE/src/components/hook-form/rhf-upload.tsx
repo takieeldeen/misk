@@ -1,3 +1,4 @@
+import { m, AnimatePresence } from 'framer-motion';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import FormHelperText from '@mui/material/FormHelperText';
@@ -32,11 +33,36 @@ export function RHFUploadAvatar({ name, ...other }: Props) {
           <div>
             <UploadAvatar value={field.value} error={!!error} onDrop={onDrop} {...other} />
 
-            {!!error && (
-              <FormHelperText error sx={{ px: 2, textAlign: 'center' }}>
-                {error.message}
-              </FormHelperText>
-            )}
+            <FormHelperText
+              error={!!error}
+              sx={{
+                px: 2,
+                textAlign: 'center',
+                minHeight: '18px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <AnimatePresence mode="wait">
+                {error ? (
+                  <m.span
+                    key="error"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ display: 'inline-block' }}
+                  >
+                    {error.message}
+                  </m.span>
+                ) : (
+                  <m.span key="helper" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    {'\u00a0'}
+                  </m.span>
+                )}
+              </AnimatePresence>
+            </FormHelperText>
           </div>
         );
       }}
@@ -74,7 +100,28 @@ export function RHFUpload({ name, multiple, helperText, ...other }: Props) {
           multiple,
           accept: { 'image/*': [] },
           error: !!error,
-          helperText: error?.message ?? helperText,
+          helperText: (
+            <div style={{ minHeight: '18px', display: 'flex', alignItems: 'center' }}>
+              <AnimatePresence mode="wait">
+                {error ? (
+                  <m.span
+                    key="error"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ display: 'inline-block' }}
+                  >
+                    {error.message}
+                  </m.span>
+                ) : (
+                  <m.span key="helper" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    {helperText || '\u00a0'}
+                  </m.span>
+                )}
+              </AnimatePresence>
+            </div>
+          ),
         };
 
         const onDrop = (acceptedFiles: File[]) => {

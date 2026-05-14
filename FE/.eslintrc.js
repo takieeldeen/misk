@@ -54,6 +54,8 @@ module.exports = {
     'react/no-unstable-nested-components': [1, { allowAsProps: true }],
     'react/jsx-no-duplicate-props': [1, { ignoreCase: false }],
     'import/no-extraneous-dependencies': 0,
+    'perfectionist/sort-imports': 'warn',
+    'react/no-unused-prop-types': 0,
     // jsx-a11y
     'jsx-a11y/anchor-is-valid': 0,
     'jsx-a11y/control-has-associated-label': 0,

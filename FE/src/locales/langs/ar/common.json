@@ -166,6 +166,9 @@
     "UPDATED_AT": "تاريخ آخر تحديث"
   },
   "common": {
+    "PAGE_NOT_FOUND_TITLE": "عذراً، لم يتم العثور على الصفحة",
+    "PAGE_NOT_FOUND_DESC": "عذراً، لم نتمكن من العثور على الصفحة التي تبحث عنها. ربما تكون قد أخطأت في كتابة عنوان URL؟ تأكد من صحة الهجاء.",
+    "BACK_TO_HOME": "عودة إلى الرئيسية",
     "SIZE_ML": "{{size}} مل",
     "IN_STOCK": "متوفر",
     "LOW_STOCK": "مخزون منخفض",
@@ -237,6 +240,36 @@
     "DELETE_PRODUCT_SUCCESS": "تم حذف المنتج بنجاح",
     "DELETE_PRODUCT_ERROR": "فشل حذف المنتج"
   },
+  "catalog": {
+    "new_product": "منتج جديد",
+    "basic_info": "المعلومات الأساسية",
+    "basic_info_desc": "العنوان، الوصف المختصر، الصور...",
+    "name_ar": "اسم المنتج بالعربية",
+    "name_en": "اسم المنتج بالإنجليزية",
+    "name_ar_placeholder": "أدخل اسم المنتج بالعربية",
+    "name_en_placeholder": "أدخل اسم المنتج بالإنجليزية",
+    "description_ar": "الوصف بالعربية",
+    "description_en": "الوصف بالإنجليزية",
+    "description_ar_placeholder": "أدخل الوصف بالعربية",
+    "description_en_placeholder": "أدخل الوصف بالإنجليزية",
+    "content": "المحتوى",
+    "contentAr": "المحتوى بالعربية",
+    "contentEn": "المحتوى بالإنجليزية",
+    "images": "الصور",
+    "properties": "خصائص المنتج",
+    "properties_desc": "الماركة، الفئة، الجنس، ...",
+    "gender": "الجنس",
+    "category": "الفئة",
+    "brand": "الماركة",
+    "status": "الحالة",
+    "variants": "متغيرات المنتج",
+    "variants_desc": "أحجام المنتج، الأسعار والمخزون.",
+    "size_in_ml": "الحجم بالمل",
+    "price": "السعر",
+    "stock": "المخزون",
+    "add_variant": "إضافة متغير",
+    "remove_variant": "إزالة المتغير"
+  },
   "datagrid": {
     "columns": "الأعمدة",
     "filters": "التصفية",
@@ -271,5 +304,21 @@
     "update_photo": "تحديث الصورة",
     "upload_photo": "رفع صورة",
     "invalid_size": "حجم الملف كبير جداً. الحد الأقصى هو {{size}}"
+  },
+  "VALIDATIONS": {
+    "COMMON": {
+      "LETTERS_AND_NUMBERS": "يجب ان يتكوم {{field}} من حروف وارقام فقط.",
+      "REQUIRED": "من فضلك ادخل {{field}}.",
+      "MAX_LENGTH": "أقصى عدد حروف هو {{length}} حرف.",
+      "POSITIVE": "من فضلك ادخل قيمة موجبة.",
+      "MIN_VALUE": "أقل قيمة ل{{field}} هي {{value}}.",
+      "MAX_VALUE": "أقصى قيمة ل{{field}} هي {{value}}.",
+      "MIN_ARRAY_LENGTH": "من فضلك اختر {{field}} واحد على الأقل.",
+      "FUTURE_DATE": "عفوا يجب ان يكون {{field}} تاريخ مستقبلي",
+      "PAST_DATE": "لا يمكن ان يكون {{field}} بعد اليوم.",
+      "YOU_HAVE_N_ERRORS_LONG": "لديك ( {{n}} ) اخطاء",
+      "YOU_HAVE_N_ERRORS_SHORT": "( {{n}} )",
+      "INVALID_EMAIL": "الرجاء إدخال بريد إلكتروني صحيح."
+    }
   }
 }

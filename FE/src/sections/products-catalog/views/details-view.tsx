@@ -18,6 +18,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useTranslate } from 'src/locales';
 import { varAlpha } from 'src/theme/styles';
+import ErrorGuard from 'src/theme/core/components/error-guard';
 import {
   useGetProduct,
   useDeleteProduct,
@@ -51,7 +52,6 @@ export function ProductDetailsView() {
   const tabs = useTabs('description');
   const { i18n, t } = useTranslate();
   const router = useRouter();
-
   const confirmDeactivate = useBoolean();
   const confirmDelete = useBoolean();
 
@@ -113,150 +113,160 @@ export function ProductDetailsView() {
     [t]
   );
   return (
-    <Container sx={{ mt: 5, mb: 10 }}>
-      {/* <CartIcon totalItems={checkout.totalItems} /> */}
-      <Stack direction={{ md: 'row', xs: 'column' }} justifyContent="space-between" mb={2}>
-        <Button
-          startIcon={
-            <Iconify
-              icon={
-                i18n.language === 'ar' ? 'solar:arrow-right-outline' : 'solar:arrow-left-outline'
-              }
-            />
+    <ErrorGuard error={error}>
+      <Container sx={{ mt: 5, mb: 10 }}>
+        {/* <CartIcon totalItems={checkout.totalItems} /> */}
+        <Stack direction={{ md: 'row', xs: 'column' }} justifyContent="space-between" mb={2}>
+          <Button
+            startIcon={
+              <Iconify
+                icon={
+                  i18n.language === 'ar' ? 'solar:arrow-right-outline' : 'solar:arrow-left-outline'
+                }
+              />
+            }
+            onClick={() => router.replace(paths.dashboard.products.root)}
+          >
+            {t('common.BACK_TO_PRODUCTS_LIST')}
+          </Button>
+          <Stack direction="row" spacing={2}>
+            <Tooltip title={t('common.edit')}>
+              <IconButton>
+                <Iconify icon="solar:pen-bold" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t('common.delete')}>
+              <IconButton onClick={confirmDelete.onTrue} color="error">
+                <Iconify icon="solar:trash-bin-minimalistic-bold" />
+              </IconButton>
+            </Tooltip>
+            <LoadingButton
+              variant="contained"
+              color={product?.status === 'ACTIVE' ? 'error' : 'success'}
+              onClick={handleToggleStatus}
+              loading={activateMutation.isPending || deactivateMutation.isPending}
+              sx={{
+                ...(product?.status === 'ACTIVE' && {
+                  bgcolor: 'oklch(45.5% 0.188 13.697)',
+                  '&:hover': { bgcolor: 'oklch(37.2% 0.149 13.881)' },
+                }),
+                ...(product?.status === 'INACTIVE' && {
+                  bgcolor: 'oklch(50.8% 0.118 165.612)',
+                  '&:hover': { bgcolor: 'oklch(39.8% 0.092 165.345)' },
+                }),
+              }}
+            >
+              {product?.status === 'ACTIVE' ? t('common.deactivate') : t('common.activate')}
+            </LoadingButton>
+          </Stack>
+        </Stack>
+
+        <ConfirmDialog
+          open={confirmDeactivate.value}
+          onClose={confirmDeactivate.onFalse}
+          title={t('common.DEACTIVATE_PRODUCT_CONFIRM_TITLE')}
+          content={t('common.DEACTIVATE_PRODUCT_CONFIRM_MESSAGE')}
+          action={
+            <LoadingButton
+              variant="contained"
+              color="error"
+              onClick={handleDeactivate}
+              loading={deactivateMutation.isPending}
+              sx={{ bgcolor: '#FF3030', '&:hover': { bgcolor: '#B71D18' } }}
+            >
+              {t('common.deactivate')}
+            </LoadingButton>
           }
-          onClick={() => router.replace(paths.dashboard.products.root)}
+        />
+
+        <ConfirmDialog
+          open={confirmDelete.value}
+          onClose={confirmDelete.onFalse}
+          title={t('common.DELETE_PRODUCT_CONFIRM_TITLE')}
+          content={t('common.DELETE_PRODUCT_CONFIRM_MESSAGE')}
+          action={
+            <LoadingButton
+              variant="contained"
+              color="error"
+              onClick={handleDelete}
+              loading={deleteMutation.isPending}
+              sx={{ bgcolor: '#FF3030', '&:hover': { bgcolor: '#B71D18' } }}
+            >
+              {t('common.delete')}
+            </LoadingButton>
+          }
+        />
+
+        <Grid container spacing={{ xs: 3, md: 5, lg: 8 }}>
+          <Grid xs={12} md={6} lg={7}>
+            <DetailsCarousel images={product?.images} />
+          </Grid>
+
+          <Grid xs={12} md={6} lg={5}>
+            {product && (
+              <DetailsSummary
+                product={product}
+                // items={checkout.items}
+                // onAddCart={checkout.onAddToCart}
+                // onGotoStep={checkout.onGotoStep}
+                //   TODO
+                disableActions
+              />
+            )}
+          </Grid>
+        </Grid>
+
+        <Box
+          gap={5}
+          display="grid"
+          gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
+          sx={{ my: 10 }}
         >
-          {t('common.BACK_TO_PRODUCTS_LIST')}
-        </Button>
-        <Stack direction="row" spacing={2}>
-          <Tooltip title={t('common.edit')}>
-            <IconButton>
-              <Iconify icon="solar:pen-bold" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={t('common.delete')}>
-            <IconButton onClick={confirmDelete.onTrue} color="error">
-              <Iconify icon="solar:trash-bin-minimalistic-bold" />
-            </IconButton>
-          </Tooltip>
-          <LoadingButton
-            variant="contained"
-            color={product?.status === 'ACTIVE' ? 'error' : 'success'}
-            onClick={handleToggleStatus}
-            loading={activateMutation.isPending || deactivateMutation.isPending}
+          {SUMMARY.map((item) => (
+            <Box key={item.title} sx={{ textAlign: 'center', px: 5 }}>
+              <Iconify icon={item.icon} width={32} sx={{ color: 'primary.main' }} />
+
+              <Typography variant="subtitle1" sx={{ mb: 1, mt: 2 }}>
+                {item.title}
+              </Typography>
+
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                {item.description}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+
+        <Card>
+          <Tabs
+            value={tabs.value}
+            onChange={tabs.onChange}
             sx={{
-              ...(product?.status === 'ACTIVE' && {
-                bgcolor: 'oklch(50.5% 0.213 27.518)',
-                '&:hover': { bgcolor: 'oklch(39.6% 0.141 25.723)' },
-              }),
+              px: 3,
+              boxShadow: (theme) =>
+                `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
             }}
           >
-            {product?.status === 'ACTIVE' ? t('common.deactivate') : t('common.activate')}
-          </LoadingButton>
-        </Stack>
-      </Stack>
+            {[
+              { value: 'description', label: t('PRODUCTS.DESCRIPTION_TAB') },
+              { value: 'reviews', label: t('PRODUCTS.REVIEWS_TAB') },
+            ].map((tab) => (
+              <Tab key={tab.value} value={tab.value} label={tab.label} />
+            ))}
+          </Tabs>
 
-      <ConfirmDialog
-        open={confirmDeactivate.value}
-        onClose={confirmDeactivate.onFalse}
-        title={t('common.DEACTIVATE_PRODUCT_CONFIRM_TITLE')}
-        content={t('common.DEACTIVATE_PRODUCT_CONFIRM_MESSAGE')}
-        action={
-          <LoadingButton
-            variant="contained"
-            color="error"
-            onClick={handleDeactivate}
-            loading={deactivateMutation.isPending}
-            sx={{ bgcolor: '#FF3030', '&:hover': { bgcolor: '#B71D18' } }}
-          >
-            {t('common.deactivate')}
-          </LoadingButton>
-        }
-      />
-
-      <ConfirmDialog
-        open={confirmDelete.value}
-        onClose={confirmDelete.onFalse}
-        title={t('common.DELETE_PRODUCT_CONFIRM_TITLE')}
-        content={t('common.DELETE_PRODUCT_CONFIRM_MESSAGE')}
-        action={
-          <LoadingButton
-            variant="contained"
-            color="error"
-            onClick={handleDelete}
-            loading={deleteMutation.isPending}
-            sx={{ bgcolor: '#FF3030', '&:hover': { bgcolor: '#B71D18' } }}
-          >
-            {t('common.delete')}
-          </LoadingButton>
-        }
-      />
-
-      <Grid container spacing={{ xs: 3, md: 5, lg: 8 }}>
-        <Grid xs={12} md={6} lg={7}>
-          <DetailsCarousel images={product?.images} />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={5}>
-          {product && (
-            <DetailsSummary
-              product={product}
-              // items={checkout.items}
-              // onAddCart={checkout.onAddToCart}
-              // onGotoStep={checkout.onGotoStep}
-              //   TODO
-              disableActions
+          {tabs.value === 'description' && (
+            <ProductDetailsDescription
+              description={
+                data?.content?.[i18n.language === 'ar' ? 'contentAr' : 'contentEn'] || ''
+              }
             />
           )}
-        </Grid>
-      </Grid>
 
-      <Box
-        gap={5}
-        display="grid"
-        gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
-        sx={{ my: 10 }}
-      >
-        {SUMMARY.map((item) => (
-          <Box key={item.title} sx={{ textAlign: 'center', px: 5 }}>
-            <Iconify icon={item.icon} width={32} sx={{ color: 'primary.main' }} />
-
-            <Typography variant="subtitle1" sx={{ mb: 1, mt: 2 }}>
-              {item.title}
-            </Typography>
-
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              {item.description}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
-
-      <Card>
-        <Tabs
-          value={tabs.value}
-          onChange={tabs.onChange}
-          sx={{
-            px: 3,
-            boxShadow: (theme) =>
-              `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
-          }}
-        >
-          {[
-            { value: 'description', label: t('PRODUCTS.DESCRIPTION_TAB') },
-            { value: 'reviews', label: t('PRODUCTS.REVIEWS_TAB') },
-          ].map((tab) => (
-            <Tab key={tab.value} value={tab.value} label={tab.label} />
-          ))}
-        </Tabs>
-
-        {tabs.value === 'description' && (
-          <ProductDetailsDescription description={MOCK_DESCRIPTION} />
-        )}
-
-        {tabs.value === 'reviews' && <ProductDetailsReview />}
-      </Card>
-    </Container>
+          {tabs.value === 'reviews' && <ProductDetailsReview />}
+        </Card>
+      </Container>
+    </ErrorGuard>
   );
 }
 

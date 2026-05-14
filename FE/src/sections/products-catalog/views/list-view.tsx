@@ -44,7 +44,6 @@ import { CustomDataGrid } from 'src/components/custom-datagrid';
 
 import { ProductTableToolbar } from '../table-toolbar';
 import { ProductTableFiltersResult } from '../table-filters-result';
-
 import {
   RenderCellBrand,
   RenderCellPrice,
@@ -319,7 +318,7 @@ export default function ListView() {
             variant="contained"
             color="primary"
             startIcon={<Iconify icon="mingcute:add-line" />}
-            onClick={() => console.log('New Product')}
+            onClick={() => router.push(paths.dashboard.products.catalogNew)}
           >
             {t('common.new_product')}
           </Button>
@@ -376,6 +375,11 @@ export default function ListView() {
               toolbar: CustomToolbarCallback as GridSlots['toolbar'],
               noRowsOverlay: () => <EmptyContent />,
               noResultsOverlay: () => <EmptyContent title="No results found" />,
+            }}
+            slotProps={{
+              panel: { anchorEl: filterButtonEl },
+              toolbar: { setFilterButtonEl, quickFilterProps: { debounceMs: 500 } },
+              columnsManagement: { getTogglableColumns },
             }}
             sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
           />

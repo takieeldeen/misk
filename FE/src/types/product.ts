@@ -53,4 +53,6 @@ export type IProductItem = {
   };
   createdAt: IDateValue;
   updatedAt: IDateValue;
+  contentAr?: string;
+  contentEn?: string;
 };

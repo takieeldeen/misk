@@ -128,7 +128,7 @@ export function DetailsSummary({
         </Box>
       )} */}
 
-      {fCurrency((currentVariant?.price || 0) / 100, { currency: 'EGP' })}
+      {fCurrency(currentVariant?.price || 0, { currency: 'EGP' })}
     </Box>
   );
 
